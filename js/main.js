@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', function () {
 function drawStreamgraph(reports_data) {
 
 
-
-    if(true){
     const groupedData = reports_data.reduce((result, item) => {
         const date = item.time.toLocaleDateString();
         const hour = item.time.getHours();
@@ -182,12 +180,19 @@ var svg = d3.select(".streamgraph")
   .style("text-anchor", "end")
   .text("Time");
 
-  const legend = svg.append("g")
-  .attr("transform", "translate(" + (width + margin.right + 20) + "," + margin.top + ")");
+const legendSvg = d3.select(".streamgraph")
+  .append("svg")
+  .attr("width", 300) // Adjust the width as needed
+  .attr("height", 400)
+  .append("g")
+  .attr("transform", "translate(" + (100) + "," + 0 + ")");
+
+// Append the legend to the new SVG
+const legend = legendSvg.append("g");
 
 keys.forEach((key, i) => {
   const legendItem = legend.append("g")
-    .attr("transform", "translate(0," + (i * 25) + ")");
+    .attr("transform", "translate(0," + (i * 25) + ")"); // Adjusted spacing
 
   legendItem.append("rect")
     .attr("width", 18)
@@ -201,25 +206,7 @@ keys.forEach((key, i) => {
     .style("text-anchor", "start")
     .text(key);
 });
-    }
-    else
-    {
-        const newData = {};
-        let index = 0;
-
-for (const datetimeKey in groupedData) {
-  newData[index] = {
-    datetime: new Date(datetimeKey),
-    buildings: groupedData[datetimeKey].buildings / groupedData[datetimeKey].count,
-    impact: groupedData[datetimeKey].impact / groupedData[datetimeKey].count,
-    // ... other attributes
-  };
-
-  // Add other properties as needed
-
-  index++;
-}
-    }
+    
    
 }
 
