@@ -213,7 +213,8 @@ svg
   .attr("transform", "translate(" + (100) + "," + 0 + ")");
 
 // Append the legend to the new SVG
-const legend = legendSvg.append("g");
+const legend = legendSvg.append("g")
+.attr("transform", "translate(75, 0)");
 
 keys.forEach((key, i) => {
   const legendItem = legend.append("g")
@@ -406,7 +407,7 @@ legendSvg
   .attr("height", 400);
 
   const legend = legendSvg.append("g")
-  .attr("transform", "translate(100, 0)");
+  .attr("transform", "translate(75, 0)");
 
 
 keys.forEach((key, i) => {
