@@ -1,4 +1,5 @@
 let reports_data = null;
+let tooltip = null;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -19,8 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraphFiner(reports_data);
 
             drawStreamgraphFinal(reports_data);
-            drawBarChart(reports_data);
             drawLineChart(reports_data);
+            tooltip =  d3.select('#tooltip');
+            drawBarChart(14);
         });
     
 });
@@ -429,7 +431,83 @@ keys.forEach((key, i) => {
    
 }
 
-function drawBarChart() {
+function drawBarChart(location) {
+
+    var averages = calculateAverages(reports_data, location);
+    console.log(averages);
+
+    const margin = { top: 20, right: 20, bottom: 50, left: 60 };
+    const width = 700 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chart-bar")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const xScale = d3.scaleBand()
+        .domain(Object.keys(averages))
+        .range([0, width])
+        .padding(0.1);
+
+    const yScale = d3.scaleLinear()
+        .domain([0, d3.max(Object.values(averages))])
+        .range([height, 0]);
+
+   
+    svg.selectAll(".bar-image")
+        .data(Object.entries(averages))
+        .enter()
+        .append("image")
+        .attr("class", "bar-image")
+        .attr("id", d => `${d[0]}`)
+        .attr("width", 100)
+        .attr("height", d => height- yScale(d[1]))
+        .attr("xlink:href", d => `/Data/vectors/${d[0]}.svg`)
+        .attr("transform", d => `translate(${xScale(d[0])}, ${yScale(d[1])})`)
+        .attr("preserveAspectRatio", "none")
+        .on('mouseover', function(event, d){
+            console.log("hovered on ", d);
+            showTooltip(d, event);
+        })
+        .on('mouseout', function(event, d){
+            hideTooltip(d, event);
+        });
+
+
+    // ---- CODE FOR RECTANGLES IN BAR. -----
+    // svg.selectAll("rect")
+    //     .data(Object.entries(averages))
+    //     .enter()
+    //     .append("rect")
+    //     .attr("x", d => xScale(d[0]))
+    //     .attr("y", d => yScale(d[1]))
+    //     .attr("width", xScale.bandwidth())
+    //     .attr("height", d => height - yScale(d[1]))
+    //     .attr("fill", "lightblue")
+    //     .on('mouseover', function (event, d) {
+    //         console.log("hovered on", d);
+    //         var param = d[0], value = d[1];
+    //         d3.select(this).attr("fill", "steelblue");
+    //         d3.select("#chart-bar").style("background-image", `/Data/icons/${d[0]}.png`);
+    //         //showTooltip(reports_data, location, event);
+    //     })
+    //     .on('mouseout', function (event, d) {
+    //         // Change the fill back to steelblue on hover out
+    //         d3.select(this).attr("fill", "lightblue");
+    //         d3.select("#chart-bar").style("background-image", "none");
+    //     });
+
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+
+    svg.append("g")
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis);
+
+    svg.append("g")
+        .call(yAxis);
 
 }
 
@@ -438,3 +516,45 @@ function drawLineChart() {
 }
 
 
+function calculateAverages(data, location) {
+    const parameters = ["buildings", "medical", "power", "roads_and_bridges", "sewer_and_water", "shake_intensity"];
+
+    const locationData = data.filter(entry => +entry.location === location);
+    const averages = {};
+
+    parameters.forEach(parameter => {
+        const validValues = locationData.filter(entry => entry[parameter] !== -1.0).map(entry => parseFloat(entry[parameter]));
+        const sum = validValues.reduce((acc, value) => acc + value, 0);
+        const average = validValues.length > 0 ? sum / validValues.length : 0;
+        averages[parameter] = average;
+    });
+
+    return averages;
+}
+
+function showTooltip(d, event) {
+
+    var x_cood = event.pageX - 1000, y_cood = event.pageY - 300;
+  
+    tooltip
+        .style('top', y_cood + 'px')
+        .style('left', x_cood + 'px');
+    
+
+    console.log("Tooltip in action")
+
+    tooltip.select("#tooltip-title").text(`${d[0]}`)
+    tooltip.select("#tooltip-x").text(`Average value reported - ${d[1]}`)
+
+    tooltip
+        .transition()
+        .duration(200) 
+        .style("opacity", 0.9);
+}
+
+function hideTooltip() {
+    tooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0);
+}
