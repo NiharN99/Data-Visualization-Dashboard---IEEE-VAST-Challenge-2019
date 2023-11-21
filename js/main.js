@@ -50,7 +50,7 @@ function drawStreamgraphFiner(reports_data) {
         const minutes = item.time.getMinutes();
         
         const hasMinusOne = Object.values(item).some(
-            (value) => value === "-1.0"
+            (value) => value === -1
         );
     
         if (!hasMinusOne) {
@@ -118,15 +118,15 @@ for (const datetimeKey in groupedData) {
 
 const arrayResult = Object.values(newData);
 
-const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location');
+const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location' );
 
   arrayResult.forEach(item => {
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 30, bottom: 150, left: 50},
+  var margin = {top: 10, right: 30, bottom: 175, left: 50},
   width = 1200 - margin.left - margin.right,
-  height = 420 - margin.top - margin.bottom;
+  height = 400 - margin.top - margin.bottom;
 
 var svg = d3.select("#streamgraph");
 svg.selectAll("*").remove();
@@ -195,11 +195,11 @@ svg
       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
 
   svg.append('g')
-    .attr('transform', 'translate(0,' + (height+margin.bottom-35) + ')')
+    .attr('transform', 'translate(0,' + (height+margin.bottom-20) + ')')
     .call(xAxis);    
 
     svg.append("text")
-  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom+8) + ")")
   .style("text-anchor", "end")
   .text("Time");
 
@@ -242,7 +242,7 @@ function drawStreamgraph(reports_data) {
         const hour = item.time.getHours();
         
         const hasMinusOne = Object.values(item).some(
-            (value) => value === "-1.0"
+            (value) => value === -1
         );
     
         if (!hasMinusOne) {
@@ -311,7 +311,7 @@ for (const datetimeKey in groupedData) {
 
 const arrayResult = Object.values(newData);
 
-const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location');
+const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location' );
 
   arrayResult.forEach(item => {
     item.datetime = item.datetime.getTime();
