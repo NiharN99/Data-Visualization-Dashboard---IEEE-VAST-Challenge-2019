@@ -133,15 +133,16 @@ svg.selectAll("*").remove();
 
 svg
   .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-.append("g")
-  .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+  .attr("height", height + margin.top + margin.bottom);
+// .append("g")
+//   .attr("transform",
+//         "translate(" + margin.left + "," + margin.top + ")");
 
   const stack = d3.stack().keys(keys).order(d3.stackOrderNone).offset(d3.stackOffsetWiggle);
   const stackedData = stack(arrayResult);
 
-  const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([0, width]);
+  const padding = 30;
+  const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
   const yScale = d3.scaleLinear().domain([0, d3.max(stackedData, layer => d3.max(layer, d => d[1]))]).range([height, 0]);
 
   const area = d3.area()
@@ -315,7 +316,7 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 30, bottom: 150, left: 50},
+  var margin = {top: 10, right: 20, bottom: 150, left: 50};
   width = 1200 - margin.left - margin.right,
   height = 420 - margin.top - margin.bottom;
 
@@ -325,15 +326,18 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
 
 svg
   .attr("width", width + margin.left + margin.right)
-  .attr("height", height + margin.top + margin.bottom)
-.append("g")
-  .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
+  .attr("height", height + margin.top + margin.bottom);
+
+  // svg.append("g")
+  // .attr("transform",
+  //       "translate(" + margin.left + "," + margin.top + ")");
 
   const stack = d3.stack().keys(keys).order(d3.stackOrderNone).offset(d3.stackOffsetWiggle);
   const stackedData = stack(arrayResult);
 
-  const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([0, width]);
+  const padding = 30;
+  const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
+  
   const yScale = d3.scaleLinear().domain([0, d3.max(stackedData, layer => d3.max(layer, d => d[1]))]).range([height, 0]);
 
   const area = d3.area()
@@ -386,7 +390,7 @@ svg
       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
 
   svg.append('g')
-    .attr('transform', 'translate(0,' + (height+margin.bottom-35) + ')')
+    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-35) + ')')
     .call(xAxis);    
 
     svg.append("text")
@@ -398,18 +402,16 @@ svg
   legendSvg.selectAll("*").remove();
 
 legendSvg
-  .attr("width", 300) // Adjust the width as needed
-  .attr("height", 400)
-  .append("g")
-  .attr("transform", "translate(" + (100) + "," + 0 + ")");
+  .attr("width", 300) 
+  .attr("height", 400);
 
-// Append the legend to the new SVG
-const legend = legendSvg.append("g");
+  const legend = legendSvg.append("g")
+  .attr("transform", "translate(100, 0)");
+
 
 keys.forEach((key, i) => {
   const legendItem = legend.append("g")
-    .attr("transform", "translate(0," + (i * 25) + ")"); // Adjusted spacing
-
+    .attr("transform", "translate(0," + (i * 25) + ")"); 
   legendItem.append("rect")
     .attr("width", 18)
     .attr("height", 18)
