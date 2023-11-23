@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 12;
+             let location = 6;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -43,7 +43,6 @@ document.getElementById('timeInterval').addEventListener('change', function () {
 
 
 function drawStreamgraphFiner(reports_data,location) {
-  // console.log(reports_data);
 
   reports_data = reports_data.filter(entry => entry.location === location);
 
@@ -287,7 +286,7 @@ for (let dateTimeKey in groupedData) {
                 groupedData[dateTimeKey][key] =
                     groupedData[dateTimeKey][key].sum / groupedData[dateTimeKey][key].count;
             } else {
-                groupedData[dateTimeKey][key] = 0; 
+                groupedData[dateTimeKey][key] = -1; 
             }
         }
     }
