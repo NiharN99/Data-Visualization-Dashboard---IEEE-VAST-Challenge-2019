@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 6;
+             let location = 4;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -45,6 +45,39 @@ document.getElementById('timeInterval').addEventListener('change', function () {
 function drawStreamgraphFiner(reports_data,location) {
 
   reports_data = reports_data.filter(entry => entry.location === location);
+
+  reports_data = reports_data.map(obj => {
+    let { location, impact, time, ...rest } = obj;
+  
+  
+    let updatedObject = Object.fromEntries(
+      Object.entries(rest).map(([key, value]) => [key, value + 1])
+    );
+  
+    return {
+      location,
+      impact,
+      time,
+      ...updatedObject,
+    };
+  });
+  
+  reports_data = reports_data.map(obj => {
+    let { location, impact, time, ...rest } = obj;
+  
+    let updatedObject = Object.fromEntries(
+      Object.entries(rest).map(([key, value]) => {
+        return [key, (value === 0 && key !== "location" && key !== "impact" && key !== "time") ? value - 1 : value];
+      })
+    );
+  
+    return {
+      location,
+      impact,
+      time,
+      ...updatedObject,
+    };
+  });
 
   const groupedData = reports_data.reduce((result, item) => {
     const date = item.time.toLocaleDateString();
@@ -242,6 +275,41 @@ keys.forEach((key, i) => {
 function drawStreamgraph(reports_data, location) {
 
   reports_data = reports_data.filter(entry => entry.location === location);
+
+ reports_data = reports_data.map(obj => {
+  let { location, impact, time, ...rest } = obj;
+
+
+  let updatedObject = Object.fromEntries(
+    Object.entries(rest).map(([key, value]) => [key, value + 1])
+  );
+
+  return {
+    location,
+    impact,
+    time,
+    ...updatedObject,
+  };
+});
+
+reports_data = reports_data.map(obj => {
+  let { location, impact, time, ...rest } = obj;
+
+  let updatedObject = Object.fromEntries(
+    Object.entries(rest).map(([key, value]) => {
+      return [key, (value === 0 && key !== "location" && key !== "impact" && key !== "time") ? value - 1 : value];
+    })
+  );
+
+  return {
+    location,
+    impact,
+    time,
+    ...updatedObject,
+  };
+});
+
+
 
   const groupedData = reports_data.reduce((result, item) => {
     const date = item.time.toLocaleDateString();
