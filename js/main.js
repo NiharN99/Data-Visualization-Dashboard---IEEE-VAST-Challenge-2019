@@ -286,7 +286,7 @@ for (let dateTimeKey in groupedData) {
                 groupedData[dateTimeKey][key] =
                     groupedData[dateTimeKey][key].sum / groupedData[dateTimeKey][key].count;
             } else {
-                groupedData[dateTimeKey][key] = -1; 
+                groupedData[dateTimeKey][key] = 0; 
             }
         }
     }
