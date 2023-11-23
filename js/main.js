@@ -1,4 +1,3 @@
-let reports_data = null;
 let tooltip = null;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,12 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-
+             let location = 12;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
 
-            drawStreamgraphFinal(reports_data);
+            drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
             drawBarChart(14);
@@ -27,75 +26,81 @@ document.addEventListener('DOMContentLoaded', function () {
     
 });
 
-function drawStreamgraphFinal (reports_data) {
-  drawStreamgraph(reports_data);
+function drawStreamgraphFinal (reports_data,location) {
+  drawStreamgraph(reports_data,location);
 
 document.getElementById('timeInterval').addEventListener('change', function () {
   const selectedInterval = this.value;
 
   if (selectedInterval === 'minutes') {
-    drawStreamgraphFiner(reports_data);
+    drawStreamgraphFiner(reports_data,location);
   } else if (selectedInterval === 'hours') {
-    drawStreamgraph(reports_data);
+    drawStreamgraph(reports_data,location);
   }
 });
 
 }
 
 
-function drawStreamgraphFiner(reports_data) {
-  console.log(reports_data);
+function drawStreamgraphFiner(reports_data,location) {
+  // console.log(reports_data);
+
+  reports_data = reports_data.filter(entry => entry.location === location);
 
   const groupedData = reports_data.reduce((result, item) => {
-        const date = item.time.toLocaleDateString();
-        const hour = item.time.getHours();
-        const minutes = item.time.getMinutes();
-        
-        const hasMinusOne = Object.values(item).some(
-            (value) => value === -1
-        );
-    
-        if (!hasMinusOne) {
-            const dateTimeKey = `${date} ${hour}:${minutes}`; 
-    
-            if (!result[dateTimeKey]) {
-                result[dateTimeKey] = {
-                    datetime: dateTimeKey,
-                    buildings: 0,
-                    impact: 0,
-                    location: 0,
-                    medical: 0,
-                    power: 0,
-                    roads_and_bridges: 0,
-                    sewer_and_water: 0,
-                    shake_intensity: 0,
-                    count: 0,
-                };
-            }
-    
-            result[dateTimeKey].buildings += parseFloat(item.buildings);
-            result[dateTimeKey].impact += parseFloat(item.impact);
-            result[dateTimeKey].location += parseFloat(item.location);
-            result[dateTimeKey].medical += parseFloat(item.medical);
-            result[dateTimeKey].power += parseFloat(item.power);
-            result[dateTimeKey].roads_and_bridges += parseFloat(item.roads_and_bridges);
-            result[dateTimeKey].sewer_and_water += parseFloat(item.sewer_and_water);
-            result[dateTimeKey].shake_intensity += parseFloat(item.shake_intensity);
-    
-            result[dateTimeKey].count += 1;
+    const date = item.time.toLocaleDateString();
+    const hour = item.time.getHours();
+    const minutes = item.time.getMinutes();
+    const currLocation = item.location;
+
+    const validProperties = Object.entries(item)
+        .filter(([key, value]) =>  key !== 'location' && key != 'time' && key!='impact');
+
+    if (validProperties.length > 0) {
+      const dateTimeKey = `${date} ${hour}:${minutes}`; 
+
+        if (!result[dateTimeKey]) {
+            result[dateTimeKey] = {
+                datetime: dateTimeKey,
+                buildings: { sum: 0, count: 0 },
+                medical: { sum: 0, count: 0 },
+                power: { sum: 0, count: 0 },
+                roads_and_bridges: { sum: 0, count: 0 },
+                sewer_and_water: { sum: 0, count: 0 },
+                shake_intensity: { sum: 0, count: 0 },
+            };
         }
-    
-        return result;
-    }, {});
-    
-    for (let dateTimeKey in groupedData) {
-        for (let key in groupedData[dateTimeKey]) {
-            if (key !== 'count') {
-                groupedData[dateTimeKey][key] /= groupedData[dateTimeKey].count;
-            }
-        }
-        delete groupedData[dateTimeKey].count; 
+
+        validProperties.forEach(([key, value]) => {
+          if (value !== -1) {
+            result[dateTimeKey][key].sum += parseFloat(value);
+            result[dateTimeKey][key].count += 1;
+          }
+      });
+
+      result[dateTimeKey].location = currLocation;
     }
+
+    return result;
+}, {});
+
+for (let dateTimeKey in groupedData) {
+    for (let key in groupedData[dateTimeKey]) {
+        if (key !== 'location' && key !== 'impact') {
+            if (groupedData[dateTimeKey][key].count > 0) {
+                groupedData[dateTimeKey][key] =
+                    groupedData[dateTimeKey][key].sum / groupedData[dateTimeKey][key].count;
+            } else {
+                groupedData[dateTimeKey][key] = 0; 
+            }
+        }
+    }
+    for (let key in groupedData[dateTimeKey]) {
+        delete groupedData[dateTimeKey][key].sum;
+        delete groupedData[dateTimeKey][key].count;
+    }
+}
+
 
 
     const newData = {};
@@ -104,7 +109,6 @@ for (const datetimeKey in groupedData) {
   newData[index] = {
     datetime: new Date(datetimeKey),
     buildings: groupedData[datetimeKey].buildings,
-    impact: groupedData[datetimeKey].impact,
     location: groupedData[datetimeKey].location,
     medical: groupedData[datetimeKey].medical,
     power: groupedData[datetimeKey].power,
@@ -236,60 +240,62 @@ keys.forEach((key, i) => {
 });
 }
 
-function drawStreamgraph(reports_data) {
+function drawStreamgraph(reports_data, location) {
 
+  reports_data = reports_data.filter(entry => entry.location === location);
 
-    const groupedData = reports_data.reduce((result, item) => {
-        const date = item.time.toLocaleDateString();
-        const hour = item.time.getHours();
-        
-        const hasMinusOne = Object.values(item).some(
-            (value) => value === -1
-        );
-    
-        if (!hasMinusOne) {
-            const dateTimeKey = `${date} ${hour}:00`; 
-    
-            if (!result[dateTimeKey]) {
-                result[dateTimeKey] = {
-                    datetime: dateTimeKey,
-                    buildings: 0,
-                    impact: 0,
-                    location: 0,
-                    medical: 0,
-                    power: 0,
-                    roads_and_bridges: 0,
-                    sewer_and_water: 0,
-                    shake_intensity: 0,
-                    count: 0,
-                };
-            }
-    
-            result[dateTimeKey].buildings += parseFloat(item.buildings);
-            result[dateTimeKey].impact += parseFloat(item.impact);
-            result[dateTimeKey].location += parseFloat(item.location);
-            result[dateTimeKey].medical += parseFloat(item.medical);
-            result[dateTimeKey].power += parseFloat(item.power);
-            result[dateTimeKey].roads_and_bridges += parseFloat(item.roads_and_bridges);
-            result[dateTimeKey].sewer_and_water += parseFloat(item.sewer_and_water);
-            result[dateTimeKey].shake_intensity += parseFloat(item.shake_intensity);
-    
-            result[dateTimeKey].count += 1;
+  const groupedData = reports_data.reduce((result, item) => {
+    const date = item.time.toLocaleDateString();
+    const hour = item.time.getHours();
+    const currLocation = item.location;
+
+    const validProperties = Object.entries(item)
+        .filter(([key, value]) =>  key !== 'location' && key != 'time' && key!='impact');
+
+    if (validProperties.length > 0) {
+        const dateTimeKey = `${date} ${hour}:00`;
+
+        if (!result[dateTimeKey]) {
+            result[dateTimeKey] = {
+                datetime: dateTimeKey,
+                buildings: { sum: 0, count: 0 },
+                medical: { sum: 0, count: 0 },
+                power: { sum: 0, count: 0 },
+                roads_and_bridges: { sum: 0, count: 0 },
+                sewer_and_water: { sum: 0, count: 0 },
+                shake_intensity: { sum: 0, count: 0 },
+            };
         }
-    
-        return result;
-    }, {});
-    
-    for (let dateTimeKey in groupedData) {
-        for (let key in groupedData[dateTimeKey]) {
-            if (key !== 'count') {
-                groupedData[dateTimeKey][key] /= groupedData[dateTimeKey].count;
-            }
-        }
-        delete groupedData[dateTimeKey].count; 
+
+        validProperties.forEach(([key, value]) => {
+          if (value !== -1) {
+            result[dateTimeKey][key].sum += parseFloat(value);
+            result[dateTimeKey][key].count += 1;
+          }
+      });
+
+      result[dateTimeKey].location = currLocation;
     }
-    // console.log(groupedData);
 
+    return result;
+}, {});
+
+for (let dateTimeKey in groupedData) {
+    for (let key in groupedData[dateTimeKey]) {
+        if (key !== 'location' && key !== 'impact') {
+            if (groupedData[dateTimeKey][key].count > 0) {
+                groupedData[dateTimeKey][key] =
+                    groupedData[dateTimeKey][key].sum / groupedData[dateTimeKey][key].count;
+            } else {
+                groupedData[dateTimeKey][key] = 0; 
+            }
+        }
+    }
+    for (let key in groupedData[dateTimeKey]) {
+        delete groupedData[dateTimeKey][key].sum;
+        delete groupedData[dateTimeKey][key].count;
+    }
+}
 
     const newData = {};
     let index = 0;
@@ -297,7 +303,6 @@ for (const datetimeKey in groupedData) {
   newData[index] = {
     datetime: new Date(datetimeKey),
     buildings: groupedData[datetimeKey].buildings,
-    impact: groupedData[datetimeKey].impact,
     location: groupedData[datetimeKey].location,
     medical: groupedData[datetimeKey].medical,
     power: groupedData[datetimeKey].power,
@@ -309,9 +314,8 @@ for (const datetimeKey in groupedData) {
   index++;
 }
 
-// console.log(newData);
-
 const arrayResult = Object.values(newData);
+// console.log(arrayResult);
 
 const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location' );
 
@@ -337,6 +341,7 @@ svg
 
   const stack = d3.stack().keys(keys).order(d3.stackOrderNone).offset(d3.stackOffsetWiggle);
   const stackedData = stack(arrayResult);
+
 
   const padding = 30;
   const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
