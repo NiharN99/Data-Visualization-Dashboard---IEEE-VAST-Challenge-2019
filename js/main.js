@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 12;
+             let location = [1,2,3,4,5,6,7];
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -302,7 +302,7 @@ function drawStreamgraphFinal (reports_data,location) {
 
 function drawStreamgraph(reports_data, location) {
 
-  reports_data = reports_data.filter(entry => entry.location === location);
+  reports_data = reports_data.filter(entry => location.includes(entry.location));
 
  reports_data = reports_data.map(obj => {
   let { location, impact, time, ...rest } = obj;
@@ -493,7 +493,7 @@ svg
       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
 
   svg.append('g')
-    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-15) + ')')
+    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-23) + ')')
     .call(xAxis);    
 
     svg.append("text")
