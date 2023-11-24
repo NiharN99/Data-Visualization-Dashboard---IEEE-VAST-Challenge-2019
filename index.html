@@ -62,15 +62,31 @@
 
             <div class="row">
                 <div class="card">
-                    <h2>Card 3</h2>
-                    <p>Content of Card 3</p>
+                    <div id="violin_header_container">
+                        <div id="violin_header_right">
+                            <button class="button" id="return_button" style="display: none;">Return</button>
+                        </div>
+                        <div id="violin_header_left">
+                            <h2>Card 3 - Violin Chart</h2>
+                            <p style="text-align: center; font-weight: bold;"> <span id="violinInstruct">Distribution of damage across locations</span></p>
+                        </div>
+                    </div>
+                    <div id="mainViolinDiv">
+                        <svg id="mainViolin" height="1000px" width="800px"></svg>
+                    </div>
+                    <div id="secondViolinDiv">
+                        <svg id="secondViolin" height="1000px" width="800px"></svg>
+                    </div>
                 </div>
 
                 <div class="card">
-                    <h2>Card 4</h2>
-                    <p>Content of Card 4</p>
+                    <h2>Card 4 - Pie Chart</h2>
+                    <p style="text-align: center; font-weight: bold;">Percentage Missing Data across utilities For Location <span id="pieLocation">  </span></p>
+                    <span id="pieChartInstruct" style="text-align: center; font-style: italic;">(Select a location on Violin Chart to display missing data)</span>
+                    <svg id="pieChart" width="500" height="500"></svg>
                 </div>
             </div>
+
 
             <div class="row">
                 <div class="card full-width streamgraph">
