@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 4;
+             let location = 7;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
 function drawStreamgraphFinal (reports_data,location) {
   drawStreamgraph(reports_data,location);
 
-document.getElementById('timeInterval').addEventListener('change', function () {
-  const selectedInterval = this.value;
+// document.getElementById('timeInterval').addEventListener('change', function () {
+//   const selectedInterval = this.value;
 
-  if (selectedInterval === 'minutes') {
-    drawStreamgraphFiner(reports_data,location);
-  } else if (selectedInterval === 'hours') {
-    drawStreamgraph(reports_data,location);
-  }
-});
+//   if (selectedInterval === 'minutes') {
+//     drawStreamgraphFiner(reports_data,location);
+//   } else if (selectedInterval === 'hours') {
+//     drawStreamgraph(reports_data,location);
+//   }
+// });
 
 }
 
@@ -390,9 +390,9 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 20, bottom: 150, left: 50};
+  var margin = {top: 10, right: 20, bottom: 175, left: 50};
   width = 1200 - margin.left - margin.right,
-  height = 420 - margin.top - margin.bottom;
+  height = 400 - margin.top - margin.bottom;
 
   var svg = d3.select("#streamgraph");
   svg.selectAll("*").remove();
@@ -465,11 +465,11 @@ svg
       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
 
   svg.append('g')
-    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-35) + ')')
+    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-15) + ')')
     .call(xAxis);    
 
     svg.append("text")
-  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom + 10) + ")")
   .style("text-anchor", "end")
   .text("Time");
 
