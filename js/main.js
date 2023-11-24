@@ -891,7 +891,7 @@ function drawInnovative(reports_data)
     .data([0, 1])
     .join("g")
       .attr("transform", (i) => `translate(${x(i)},20)`)
-      .call(g => g.append("text").text((i) => i ? 1979 : 1970))
+      .call(g => g.append("text").text((i) => i ? "endDate" : "startDate"))
       .call(g => g.append("line").attr("y1", 3).attr("y2", 9).attr("stroke", "currentColor"));
 
   // Create a line for each country.
