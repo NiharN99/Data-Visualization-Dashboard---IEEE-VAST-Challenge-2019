@@ -40,6 +40,17 @@ section {
     box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
+.card-streamgraph {
+    background-color: #fff;
+    padding: 1em;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1em;
+    width: 48%; /* Adjust width as needed */
+    height: 540px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+}
+
 .full-width {
     width: 100%;
 }
