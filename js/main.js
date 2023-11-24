@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 4;
+             let location = 12;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -497,7 +497,7 @@ svg
     .call(xAxis);    
 
     svg.append("text")
-  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom + 10) + ")")
+  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom + 9) + ")")
   .style("text-anchor", "end")
   .text("Time");
 
