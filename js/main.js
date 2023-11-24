@@ -6,6 +6,12 @@ var chorosvg;
 var chorowidth;
 var choroheight;
 var selectedStates = [];
+var mainViolinDiv;
+var secondViolinDiv;
+var pieChartInstruct;
+var pieLocation;
+var violinInstruct;
+var return_button;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -22,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             topo= values[0];
             reports_data = values[1];
             reports_data.forEach((item) => {
+            //    item.locationNum = parseInt(item.location.replace(/[^\d]/g, ''));
                 for (let key in item) {
                   if (key !== 'time') {
                     item[key] = parseFloat(item[key]);
@@ -40,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function () {
             drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo);
-
+            drawViolinChart(reports_data);
             drawInnovative(reports_data);
 
         });
@@ -941,4 +948,419 @@ function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
     if (error < maxerror) break;
   }
   return positions;
+}
+
+function drawViolinChart(){
+
+    var startDate = new Date('4/6/2020 0:00');
+    var endDate = new Date('4/11/2020 1:10');
+
+    data = reports_data.filter(function (d) {
+        var currentDate = new Date(d.time);
+        return currentDate >= startDate && currentDate <= endDate;
+    });
+
+   mainViolinDiv=document.getElementById("mainViolinDiv");
+   secondViolinDiv=document.getElementById("secondViolinDiv");
+
+   mainViolinDiv.style.display="block";
+   secondViolinDiv.style.display="none";
+
+   pieLocation=d3.select("#pieLocation");
+   pieLocation.text(" ");
+
+   violinInstruct=d3.select("#violinInstruct");
+   violinInstruct.text("Distribution of damage across locations");
+
+   pieChartInstruct=document.getElementById("pieChartInstruct");
+   pieChartInstruct.style.display="block";
+   d3.select(".pie-chart").style("display", "none");
+
+   return_button=document.getElementById("return_button");
+   return_button.style.display="none";
+
+    //console.log(i++);
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 10, bottom: 30, left: 10},
+    width = 760 - margin.left - margin.right,
+    height = 490 - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#mainViolin")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", "first_violin")
+        .style('font-family', 'sans-serif')
+    //    .style("display", "block")
+       .style('font-size', 12)
+        .append("g")
+        .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")")
+    ; 
+
+   const x = d3.scaleBand()
+     .domain(data.map(d => d.location).filter((v, i, a) => a.indexOf(v) === i))
+     .range([margin.left, width - margin.right])
+     .padding(0.05);
+   
+   const y = d3.scaleLinear()
+     .domain([0, d3.max(data, d => +d.shake_intensity)]).nice()
+     .range([height - margin.bottom, margin.top]);
+   
+   const xAxis = g => g
+     .attr('transform', `translate(0, ${height - margin.bottom})`)
+     .call(d3.axisBottom(x).tickSizeOuter(0));
+   
+   const yAxis = g => g
+     .attr('transform', `translate(${margin.left}, 0)`)
+     .call(d3.axisLeft(y))
+     .call(g => g.select('.domain').remove());
+   
+   function kde(kernel, thds) {
+     return V => thds.map(t => [t, d3.mean(V, d => kernel(t - d))])
+   }
+   
+   function epanechnikov(bandwidth) {
+     return x => Math.abs(x /= bandwidth) <= 1 ? 0.75 * (1 - x * x) / bandwidth : 0;
+   }
+   
+   const bandwidth = 0.3;
+   const thds = y.ticks(40);
+   const density = kde(epanechnikov(bandwidth), thds);
+   
+   const violins = d3.rollup(data, v => density(v.map(g => +g.shake_intensity)), d => d.location);
+   
+   var allNum = [];
+   [...violins.values()].forEach((d,i) => allNum = allNum.concat([...violins.values()][i].map(d => d[1])))
+   const xNum  = d3.scaleLinear()
+     .domain([-d3.max(allNum), d3.max(allNum)])
+     .range([0, x.bandwidth()]);
+   
+   const area = d3.area()
+     .x0(d => xNum(-d[1]))
+     .x1(d => xNum(d[1]))
+     .y(d => y(d[0]))
+     .curve(d3.curveNatural);
+   
+   svg.append('g')
+     .call(xAxis);
+   
+   svg.append('g')
+     .call(yAxis);
+   
+   svg.append('g')
+     .selectAll('g')
+     .data([...violins])
+     .join('g')
+       .attr('transform', d => `translate(${x(d[0])}, 0)`)
+     .append('path')
+       .datum(d => d[1])
+       .style('stroke', 'none')
+       .style('fill', '#69b3a2')
+       .attr('d', area)
+    ;
+
+    svg.selectAll('g')
+        .select('path')
+       .on('click', function(event, d) {
+           const selectedLocation = d[0];
+           console.log("selected Location : ", selectedLocation);
+
+           filteredData = data.filter(l => l.location===selectedLocation);
+            console.log("filtered data : ", filteredData);
+           drawSecondaryViolinChart(filteredData, selectedLocation);
+           drawPieChart(selectedLocation);
+       });
+    ;
+   
+   //return svg.node()
+ 
+}
+
+function drawSecondaryViolinChart(data, targetLocation){
+
+    console.log("entered secondary");
+    let reshapedData = [];
+
+    data.forEach(d => {
+        // Reshape data into long format
+        reshapedData.push({category: 'buildings', shake_intensity: d.buildings});
+        reshapedData.push({category: 'medical', shake_intensity: d.medical});
+        reshapedData.push({category: 'power', shake_intensity: d.power});
+        reshapedData.push({category: 'roads_and_bridges', shake_intensity: d.roads_and_bridges});
+        reshapedData.push({category: 'sewer_and_water', shake_intensity: d.sewer_and_water});
+    });
+
+    
+   mainViolinDiv.style.display="none";
+   secondViolinDiv.style.display="block";
+
+   const labelMapping = {
+        'buildings': 'Buildings',
+        'medical': 'Medical',
+        'power': 'Power',
+        'roads_and_bridges': 'Roads and Bridges',
+        'sewer_and_water': 'Sewer and Water'
+    };
+
+     // set the dimensions and margins of the graph
+     var margin = {top: 10, right: 10, bottom: 30, left: 10},
+     width = 760 - margin.left - margin.right,
+     height = 490 - margin.top - margin.bottom;
+
+      // append the svg object to the body of the page
+      var svg_new = d3.select("#secondViolin")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height)
+          .attr("class", "second_violin")
+          .style('font-family', 'sans-serif')
+         .style('font-size', 12)
+        // .style("display", "block")
+          .append("g")
+          .attr("transform",
+                  "translate(" + margin.left + "," + margin.top + ")")
+      ; 
+    
+     const x = d3.scaleBand()
+       .domain(reshapedData.map(d => d.category))
+       .range([margin.left, width - margin.right])
+       .padding(0.05);
+     
+     const y = d3.scaleLinear()
+       .domain([0, d3.max(reshapedData, d => +d.shake_intensity)]).nice()
+       .range([height - margin.bottom, margin.top]);
+     
+     const xAxis = g => g
+       .attr('transform', `translate(0, ${height - margin.bottom})`)
+       .call(d3.axisBottom(x).tickSizeOuter(0).tickFormat(d => labelMapping[d] || d));
+     
+     const yAxis = g => g
+       .attr('transform', `translate(${margin.left}, 0)`)
+       .call(d3.axisLeft(y))
+       .call(g => g.select('.domain').remove());
+
+    
+    // Function to calculate density
+    function kde(kernel, thds) {
+     //   return thresholds.map(t => [t, d3.mean(reshapedData, d => kernel(t - d))]);
+
+        return V => thds.map(t => [t, d3.mean(V, d => kernel(t - d))])
+    }
+    
+    // Kernel function for density estimation
+    function epanechnikov(bandwidth) {
+        return x => Math.abs(x /= bandwidth) <= 1 ? 0.75 * (1 - x * x) / bandwidth : 0;
+    }
+    
+    // Calculate the violins
+    let bandwidth = 0.3;  // Adjust bandwidth as needed
+    let thresholds = d3.scaleLinear().domain([0, d3.max(reshapedData, d => +d.shake_intensity)]).ticks(40);
+    let density = kde(epanechnikov(bandwidth), thresholds);
+    
+    let violins = d3.rollup(reshapedData, 
+        v => density(v.map(g => +g.shake_intensity)), 
+        d => d.category
+    );
+     
+     var allNum = [];
+     [...violins.values()].forEach((d,i) => allNum = allNum.concat([...violins.values()][i].map(d => d[1])))
+     const xNum  = d3.scaleLinear()
+       .domain([-d3.max(allNum), d3.max(allNum)])
+       .range([0, x.bandwidth()]);
+     
+     const area = d3.area()
+       .x0(d => xNum(-d[1]))
+       .x1(d => xNum(d[1]))
+       .y(d => y(d[0]))
+       .curve(d3.curveNatural);
+     
+     svg_new.append('g')
+        .call(xAxis);
+     
+     svg_new.append('g')
+       .call(yAxis);
+     
+     svg_new.append('g')
+       .selectAll('g')
+       .data([...violins])
+       .join('g')
+         .attr('transform', d => `translate(${x(d[0])}, 0)`)
+       .append('path')
+         .datum(d => d[1])
+         .style('stroke', 'none')
+         .style('fill', '#69b3a2')
+         .attr('d', area)
+      ;
+
+      return_button = document.getElementById("return_button");
+      return_button.style.display='block';
+
+    return_button.onclick=function(){drawViolinChart();};
+}
+
+function drawPieChart(targetLocation) {
+    //console.log("Drawing Pie Chart");
+
+    // Date filter
+    var startDate = new Date('4/6/2020 0:00');
+    var endDate = new Date('4/11/2020 1:10');
+
+    // Log start and end dates
+    //console.log("Start Date:", startDate);
+    //console.log("End Date:", endDate);
+
+    // Location filter (example: filter for a specific location)
+  //  var targetLocation = "18";
+    
+    // Filter the CSV data based on both time and location
+    var filteredData = reports_data.filter(function (d) {
+        var currentDate = new Date(d.time);
+        return currentDate >= startDate && currentDate <= endDate && d.location === targetLocation;
+    });
+
+    // Log the filtered data
+    console.log("Filtered Data:", filteredData);
+
+    // Group the filtered data by location and calculate the average impact
+    var groupedData = d3.group(filteredData, d => d.location);
+
+    // Log the grouped data
+    //console.log("Grouped Data:", groupedData);
+
+    // Rest of the drawPieChart function...
+
+    function getPercentageDataForCategory(category) {
+        const categoryData = filteredData.map(d => ({
+            value: parseFloat(d[category]),
+            label: category,
+        }));
+
+        //console.log("Category Data:", categoryData);
+
+        const countMinusOne = categoryData.filter(d => d.value === -1.0).length;
+        const countOther = categoryData.length - countMinusOne;
+
+         // console.log("Count of -1.0:", countMinusOne);
+         //console.log("Count of Other:", countOther);
+
+         const percentageMinusOne = (countMinusOne / categoryData.length) * 100;
+         const percentageOther = (countOther / categoryData.length) * 100;
+
+         //console.log("Percentage of -1.0:", percentageMinusOne);
+         //console.log("Percentage of Other:", percentageOther);
+
+         return [
+            { label: "-1.0", value: percentageMinusOne },
+            { label: "Other", value: percentageOther },
+        ];
+    }
+
+    const categories = ["sewer_and_water", "power", "roads_and_bridges", "medical", "buildings", "shake_intensity"];
+
+    // Select the existing SVG container with the ID "pieChart"
+    const svg = d3.select("#pieChart").attr("class", "pie-chart");
+
+    // Clear any existing content inside the SVG container
+    svg.selectAll("*").remove();
+
+    const width = 55;
+    const height = 80;
+
+    const totalWidth = categories.length * (width + 20) + 90;
+
+    svg.attr("width", totalWidth);
+
+    const coordinates = [
+        { x: 90, y: 70 },
+        { x: 270, y: 70 },
+        { x: 450, y: 70 },
+        { x: 90, y: 240 },
+        { x: 270, y: 240 },
+        { x: 450, y: 240 },
+    ];
+
+    const colorScale = d3.scaleOrdinal()
+        .domain(["-1.0", "Other"])
+        .range(["brown", "gold"]);
+
+    categories.forEach((category, index) => {
+        const pieData = getPercentageDataForCategory(category);
+       // console.log(pieData);
+
+        const chartGroup = svg.append("g")
+            .attr("transform", `translate(${coordinates[index].x}, ${coordinates[index].y})`);
+
+        const pie = d3.pie().value(function (d) { return d.value; });
+        const data_ready = pie(pieData);
+
+        const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(Math.min(width, height) / 2 + 30); // Set the outer radius relative to the SVG size
+
+        const arcs = chartGroup.selectAll("arc")
+            .data(data_ready)
+            .enter()
+            .append("g")
+            .attr("class", "arc");
+
+        arcs.append("path")
+            .attr("d", arc)
+            .attr("fill", (d, i) => colorScale(d.data.label));
+
+        // Display category name below each pie
+        chartGroup.append("text")
+            .attr("x", 0)
+            .attr("y", Math.min(width, height) / 2 + 50) // Adjust the vertical position
+            .attr("text-anchor", "middle")
+            .style("font-size", "13px") // Adjust the font size
+            .style("font-weight", "bold")  // Set text to bold
+            .style("font-family", "Arial, sans-serif")  // Change font family
+            .text(`${category}: ${pieData[0].value.toFixed(2)}%`);
+    });
+
+    // Add legend
+    const legendGroup = svg.append("g")
+        .attr("transform", "translate(200,420)");
+
+    legendGroup.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 10)
+        .attr("r", 10)
+        .style("fill", "brown");
+
+    legendGroup.append("text")
+        .attr("x", 25)
+        .attr("y", 13)
+        .style("font-size", "15px")
+        .style("font-weight", "bold")
+        .style("font-family", "Arial, sans-serif")
+        .text("% Missing Data");
+
+    const legendGroup2 = svg.append("g")
+        .attr("transform", "translate(200,390)");
+
+    legendGroup2.append("circle")
+        .attr("cx", 10)
+        .attr("cy", 10)
+        .attr("r", 10)
+        .style("fill", "gold");
+
+    legendGroup2.append("text")
+        .attr("x", 25)
+        .attr("y", 13)
+        .style("font-size", "15px")
+        .style("font-weight", "bold")
+        .style("font-family", "Arial, sans-serif")
+        .text("% Available Data");
+
+    //console.log("Pie Chart drawing completed");
+    pieLocation.text("'"+targetLocation+"'");
+    violinInstruct.text("Distribution of damage across utilities for Location '"+targetLocation+"'");
+
+    pieChartInstruct=document.getElementById("pieChartInstruct");
+    pieChartInstruct.style.display="none";
+    d3.select(".pie-chart").style("display", "block");
 }
