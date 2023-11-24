@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
+<<<<<<< Updated upstream
              let location = 4;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
@@ -40,6 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
             drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo);
+=======
+            // console.log(reports_data);
+            drawChoropleth(reports_data,topo);
+            drawStreamgraph(reports_data);
+            drawBarChart(reports_data);
+            drawLineChart(reports_data);
+            drawInnovative(reports_data);
+>>>>>>> Stashed changes
 
         });
     
@@ -665,7 +674,7 @@ function drawChoropleth (reports_data,topo){
 
       // Group the filtered data by location and calculate the average impact
       var groupedData = d3.group(filteredData, d => d.location);
-      console.log(groupedData);
+      // console.log(groupedData);
 
       var averagedImpact = new Map();
       groupedData.forEach((value, key) => {
@@ -674,7 +683,7 @@ function drawChoropleth (reports_data,topo){
         averagedImpact.set(key, averageImpact);
       });
 
-      console.log(averagedImpact);
+      // console.log(averagedImpact);
 
 
       let projection = d3.geoMercator()
@@ -685,7 +694,7 @@ function drawChoropleth (reports_data,topo){
       let path = d3.geoPath().projection(projection);
     
       let mouseOver = function(d) {
-        console.log(d);
+        // console.log(d);
 
         d3.select(this)
           .transition()
@@ -713,20 +722,20 @@ function drawChoropleth (reports_data,topo){
       .style("stroke-width", "2")
       .style("stroke","#fff")
       .attr("fill", function (d) {
-        console.log(d.properties.Id);
+        // console.log(d.properties.Id);
         var location = d.properties.Id; // Assuming 'Nbrhood' holds the location value
         averageImpact = averagedImpact.get(location);
-        console.log(averageImpact);
+        // console.log(averageImpact);
         return averageImpact ? colorScale(parseFloat(averageImpact)): '#ffffff';
 
       })
       .on("mouseover", mouseOver )
       .on("mouseleave", mouseLeave )
       .on("click", function(d) {
-          console.log(d);
+          // console.log(d);
           const selected = d.srcElement.__data__.properties.Id;
           const name = d.srcElement.__data__.properties.Nbrhood;
-          console.log(selected)
+          // console.log(selected)
           let index = selectedStates.indexOf(name);
 
             if (index > -1) {
@@ -755,4 +764,188 @@ function drawChoropleth (reports_data,topo){
             })
 
       });
+}
+
+function drawInnovative(reports_data)
+{
+  var startDate = new Date('4/6/2020 0:00');
+  var endDate = new Date('4/11/2020 0:00');
+
+  // Filter the CSV data based on the date range
+  var filteredData = reports_data.filter(function (d) {
+    var currentDate = new Date(d.time);
+    return currentDate >= startDate && currentDate <= endDate;
+  });
+  console.log(filteredData);
+
+  const filteredByDate = filteredData.filter((record) => {
+    const recordDate = new Date(record.time);
+    return recordDate >= startDate && recordDate < endDate;
+  });
+  
+  // Function to filter data for a specific category within a time range
+  const filterDataByCategoryAndTimeRange = (data, category, startTime, endTime) => {
+    const filteredByCategory = data.filter((record) => {
+      const recordDate = new Date(record.time);
+      return recordDate >= startTime && recordDate <= endTime && parseFloat(record[category]) !== -1.0;
+    });
+    return filteredByCategory;
+  };
+  
+  // Example: Filter 'sewer_and_water' category data within specified time ranges
+  const startTimeRange1 = new Date(startDate);
+  const endTimeRange1 = new Date(startDate);
+  const startTimeRange2 = new Date(endDate);
+  const endTimeRange2 = new Date(endDate);
+  
+  startTimeRange1.setHours(startTimeRange1.getHours() ); // Start time + 1 hour
+  endTimeRange1.setHours(endTimeRange1.getHours() + 1); // End time - 1 hour
+
+  startTimeRange2.setHours(startTimeRange2.getHours() - 1); // Start time + 1 hour
+  endTimeRange2.setHours(endTimeRange2.getHours()); // End time - 1 hour
+  
+  const filteredSewerAndWaterData1 = filterDataByCategoryAndTimeRange(filteredByDate, 'sewer_and_water', startTimeRange1, endTimeRange1);
+  const filteredSewerAndWaterData2 = filterDataByCategoryAndTimeRange(filteredByDate, 'sewer_and_water', startTimeRange2, endTimeRange2);
+  
+  // Use filteredSewerAndWaterData for further processing/display
+  // console.log(filteredSewerAndWaterData1);
+  // console.log(filteredSewerAndWaterData2);
+
+
+  const aggregateDataByRanges = (data, category) => {
+    const ranges = {
+      'Low': 0,
+      'Medium': 0,
+      'High': 0,
+      'Very High': 0        };
+  
+    data.forEach(record => {
+      const value = parseFloat(record[category]);
+      if (value >= 0 && value <= 2) {
+        ranges['Low'] +=1;
+      } else if (value >= 3 && value <= 5) {
+        ranges['Medium'] +=1;
+      } else if (value >= 6 && value <= 8) {
+        ranges['High'] +=1;
+      } else if (value >= 9 && value <= 10) {
+        ranges['Very High'] +=1;
+      }
+    });
+  
+    return ranges;
+  };
+  
+  // Filter data for the 'sewer_and_water' category
+  // const filteredSewerAndWaterData_1 = filterDataByCategory(filteredSewerAndWaterData1, 'sewer_and_water');
+  // const filteredSewerAndWaterData_2 = filterDataByCategory(filteredSewerAndWaterData2, 'sewer_and_water');
+  // // Aggregate data by value ranges for the 'sewer_and_water' category
+  const aggregatedData1 = aggregateDataByRanges(filteredSewerAndWaterData1, 'sewer_and_water');
+  const aggregatedData2 = aggregateDataByRanges(filteredSewerAndWaterData2, 'sewer_and_water');
+  
+  // Use aggregatedData for further processing/display
+  console.log(aggregatedData1);
+  console.log(aggregatedData2);
+
+  const keys = Object.keys(aggregatedData1);
+
+
+
+  // Create a merged object in the desired format
+  const mergedObject = [];
+  console.log(keys);
+  keys.forEach((key) => {
+    mergedObject.push({"startData": aggregatedData1[key],"endData":aggregatedData2[key] , "bin": key });
+    // mergedObject[startTimeRange1] = mergedObject[startTimeRange1] || {};
+
+  });
+
+  // Display the merged object
+  console.log(mergedObject);
+
+  const width = 600;
+  const height = 400;
+  const marginTop = 40;
+  const marginRight = 50;
+  const marginBottom = 10;
+  const marginLeft = 50;
+  const padding = 3;
+  
+  // Prepare the positional scales.
+  const x = d3.scalePoint()
+    .domain([0, 1])
+    .range([marginLeft, width - marginRight])
+    .padding(0.5);
+
+  const y = d3.scaleLinear()
+    .domain(d3.extent(mergedObject.flatMap(d => [d["startData"], d["endData"]])))
+    .range([height - marginBottom, marginTop]);
+
+  const line = d3.line()
+    .x((d, i) => x(i))
+    .y(y);
+
+  const formatNumber = y.tickFormat(100);
+
+  // Create the SVG container.
+  const svg = d3.select("#innovative")
+      .attr("viewBox", [0, 0, width, height])
+      .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
+
+  // Append the x axis.
+  svg.append("g")
+      .attr("text-anchor", "middle")
+    .selectAll("g")
+    .data([0, 1])
+    .join("g")
+      .attr("transform", (i) => `translate(${x(i)},20)`)
+      .call(g => g.append("text").text((i) => i ? 1979 : 1970))
+      .call(g => g.append("line").attr("y1", 3).attr("y2", 9).attr("stroke", "currentColor"));
+
+  // Create a line for each country.
+  svg.append("g")
+      .attr("fill", "none")
+      .attr("stroke", "currentColor")
+    .selectAll("path")
+    .data(mergedObject)
+    .join("path")
+      .attr("d", (d) => line([d["startData"], d["endData"]]));
+
+  // Create a group of labels for each year.
+  svg.append("g")
+    .selectAll("g")
+    .data([0, 1])
+    .join("g")
+      .attr("transform", (i) => `translate(${x(i) + (i ? padding : -padding)},0)`)
+      .attr("text-anchor", (i) => i ? "start" : "end")
+    .selectAll("text")
+    .data((i) => d3.zip(
+      mergedObject.map(i ? (d) => `${formatNumber(d["endData"])} ${d.bin}` : (d) => `${d.bin} ${formatNumber(d["startData"])}`),
+      dodge(mergedObject.map(d => y(d[i ? "endData" : "startData"])))))
+    .join("text")
+      .attr("y", ([, y]) => y)
+      .attr("dy", "0.35em")
+      .text(([text]) => text);
+}
+
+function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
+  positions = Array.from(positions);
+  let n = positions.length;
+  if (!positions.every(isFinite)) throw new Error("invalid position");
+  if (!(n > 1)) return positions;
+  let index = d3.range(positions.length);
+  for (let iter = 0; iter < maxiter; ++iter) {
+    index.sort((i, j) => d3.ascending(positions[i], positions[j]));
+    let error = 0;
+    for (let i = 1; i < n; ++i) {
+      let delta = positions[index[i]] - positions[index[i - 1]];
+      if (delta < separation) {
+        delta = (separation - delta) / 2;
+        error = Math.max(error, delta);
+        positions[index[i - 1]] -= delta;
+        positions[index[i]] += delta;
+      }
+    }
+    if (error < maxerror) break;
+  }
+  return positions;
 }
