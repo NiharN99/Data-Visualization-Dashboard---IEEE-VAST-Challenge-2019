@@ -48,6 +48,21 @@ section {
     height: 200px;
 }
 
+.tooltip {
+    width: 200px;
+    height: 50px;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 3px;
+    font-size: 10px;
+}
+
+.bar-icon{
+    height: 70px;
+    width: 120px;
+}
+
 footer {
     background-color: #333;
     color: #fff;

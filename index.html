@@ -6,6 +6,19 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/main.js"></script>
     <title>Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+
+    <!-- jQuery (Slim build) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -38,8 +51,12 @@
                 </div>
 
                 <div class="card">
-                    <h2>Card 2</h2>
-                    <p>Content of Card 2</p>
+                    <h2>Bar Chart</h2>
+                    <svg id="chart-bar"></svg>
+                    <div id="tooltip" class="tooltip">
+                        <strong id="tooltip-title"></strong> <br>
+                        <strong id="tooltip-x"></strong> <br>
+                    </div>
                 </div>
             </div>
 
@@ -56,9 +73,16 @@
             </div>
 
             <div class="row">
-                <div class="card full-width">
+                <div class="card full-width streamgraph">
                     <h2>Card 5</h2>
+                    <!-- <label for="timeInterval">Select Time Interval:</label>
+        <select id="timeInterval">
+            <option value="minutes" >Minutes</option>
+            <option value="hours" selected>Hours</option>
+        </select> -->
                     <p>Content of Card 5</p>
+                    <svg id = "streamgraph"></svg>
+                    <svg id = "legend"></svg>
                 </div>
             </div>
 
@@ -74,6 +98,8 @@
     <footer>
         <p>&copy; 2023 Dashboard App</p>
     </footer>
+
+    <script src="js/main.js"></script>
 
 </body>
 </html>
