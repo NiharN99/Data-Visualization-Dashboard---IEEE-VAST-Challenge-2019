@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-<<<<<<< Updated upstream
              let location = 4;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
@@ -41,14 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
             drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo);
-=======
-            // console.log(reports_data);
-            drawChoropleth(reports_data,topo);
-            drawStreamgraph(reports_data);
-            drawBarChart(reports_data);
-            drawLineChart(reports_data);
+
             drawInnovative(reports_data);
->>>>>>> Stashed changes
 
         });
     
