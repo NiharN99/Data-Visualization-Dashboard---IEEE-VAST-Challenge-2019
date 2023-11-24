@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = 7;
+             let location = 4;
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
