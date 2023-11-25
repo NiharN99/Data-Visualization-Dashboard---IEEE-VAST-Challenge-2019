@@ -633,7 +633,7 @@ function calculateAverages(data, location) {
 
 function showTooltip(d, event) {
 
-    var x_cood = event.pageX - 1000, y_cood = event.pageY - 300;
+    var x_cood = event.pageX, y_cood = event.pageY;
   
     tooltip
         .style('top', y_cood + 'px')
@@ -776,7 +776,7 @@ function drawInnovative(reports_data)
     var currentDate = new Date(d.time);
     return currentDate >= startDate && currentDate <= endDate;
   });
-  console.log(filteredData);
+  console.log("Innovative fitler", filteredData);
 
   const filteredByDate = filteredData.filter((record) => {
     const recordDate = new Date(record.time);
@@ -852,7 +852,7 @@ function drawInnovative(reports_data)
 
   // Create a merged object in the desired format
   const mergedObject = [];
-  console.log(keys);
+  console.log("keys - ", keys);
   keys.forEach((key) => {
     mergedObject.push({"startData": aggregatedData1[key],"endData":aggregatedData2[key] , "bin": key });
     // mergedObject[startTimeRange1] = mergedObject[startTimeRange1] || {};
@@ -860,13 +860,13 @@ function drawInnovative(reports_data)
   });
 
   // Display the merged object
-  console.log(mergedObject);
+  console.log("Innovative Merged Data for Plot", mergedObject);
 
   const width = 600;
-  const height = 400;
+  const height = 450;
   const marginTop = 40;
   const marginRight = 50;
-  const marginBottom = 10;
+  const marginBottom = 50;
   const marginLeft = 50;
   const padding = 3;
   
@@ -880,11 +880,24 @@ function drawInnovative(reports_data)
     .domain(d3.extent(mergedObject.flatMap(d => [d["startData"], d["endData"]])))
     .range([height - marginBottom, marginTop]);
 
+const colorScale = d3.scaleOrdinal()
+    .domain(keys)
+    .range(["green", "blue", "orange", "red"]);
+
   const line = d3.line()
     .x((d, i) => x(i))
     .y(y);
 
   const formatNumber = y.tickFormat(100);
+
+  const combinedData = [...mergedObject.map(d => d.startData), ...mergedObject.map(d => d.endData)];
+  var lineCoordinates = [];
+
+  const radiusScale = d3.scaleLinear()
+    .domain([0, d3.max(combinedData)])
+    .range([3, 20]);
+
+  console.log("Combined Data", combinedData)
 
   // Create the SVG container.
   const svg = d3.select("#innovative")
@@ -897,7 +910,7 @@ function drawInnovative(reports_data)
     .selectAll("g")
     .data([0, 1])
     .join("g")
-      .attr("transform", (i) => `translate(${x(i)},20)`)
+      .attr("transform", (i) => `translate(${x(i)},10)`)
       .call(g => g.append("text").text((i) => i ? "endDate" : "startDate"))
       .call(g => g.append("line").attr("y1", 3).attr("y2", 9).attr("stroke", "currentColor"));
 
@@ -908,14 +921,32 @@ function drawInnovative(reports_data)
     .selectAll("path")
     .data(mergedObject)
     .join("path")
-      .attr("d", (d) => line([d["startData"], d["endData"]]));
+    .attr("d", (d) => {
+        // Calculate (x, y) coordinates for the start and end of the line
+        const startCoordinates = { x: x(0), y: y(d["startData"]) };
+        const endCoordinates = { x: x(1), y: y(d["endData"]) };
+  
+        // Save the coordinates to the array along with the bin value
+        lineCoordinates.push({
+          bin: d["bin"],
+          startData: d["startData"],
+          endData: d["endData"],
+          startCood: startCoordinates,
+          endCood: endCoordinates
+        });
+  
+        // Return the path data
+        return line([d["startData"], d["endData"]]);
+    });
+
+   console.log("Line Coods - ", lineCoordinates) 
 
   // Create a group of labels for each year.
   svg.append("g")
     .selectAll("g")
     .data([0, 1])
     .join("g")
-      .attr("transform", (i) => `translate(${x(i) + (i ? padding : -padding)},0)`)
+      .attr("transform", (i) => `translate(${x(i) + (i ? padding + 20 : -padding -20)},0)`)
       .attr("text-anchor", (i) => i ? "start" : "end")
     .selectAll("text")
     .data((i) => d3.zip(
@@ -925,6 +956,52 @@ function drawInnovative(reports_data)
       .attr("y", ([, y]) => y)
       .attr("dy", "0.35em")
       .text(([text]) => text);
+
+      svg.selectAll(".startCircle")
+      .data(lineCoordinates)
+      .enter()
+      .append("circle")
+        .attr("class", "startCircle")
+        .attr("cx", d => d.startCood.x) // Use start x-coordinate as the center x
+        .attr("cy", d => d.startCood.y) // Use start y-coordinate as the center y
+        .attr("r", d => radiusScale(d.startData)) // Set the radius based on startData using the radius scale
+        .attr("fill", d => colorScale(d.bin))
+        .attr("opacity", 0.4)
+        .attr("stroke", "black") // Border color
+        .attr("stroke-width", 1); // Set the fill color (adjust as needed)
+    
+    // Adding End Circles
+    svg.selectAll(".endCircle")
+      .data(lineCoordinates)
+      .enter()
+      .append("circle")
+        .attr("class", "endCircle")
+        .attr("cx", d => d.endCood.x) // Use end x-coordinate as the center x
+        .attr("cy", d => d.endCood.y) // Use end y-coordinate as the center y
+        .attr("r", d => radiusScale(d.endData)) // Set the radius based on endData using the radius scale
+        .attr("fill", d => colorScale(d.bin))
+        .attr("opacity", 0.4)
+        .attr("stroke", "black") // Border color
+        .attr("stroke-width", 1);
+
+
+        const verticalLinesData = [
+            { x: lineCoordinates[0].startCood.x, y1: marginTop, y2: height - marginBottom },
+            { x: lineCoordinates[0].endCood.x, y1: marginTop, y2: height - marginBottom }
+        ];
+        
+        // Adding the vertical lines
+        svg.selectAll(".vertical-line")
+            .data(verticalLinesData)
+            .enter()
+            .append("line")
+            .attr("class", "vertical-line")
+            .attr("x1", d => d.x)
+            .attr("y1", d => d.y1)
+            .attr("x2", d => d.x)
+            .attr("y2", d => d.y2)
+            .attr("stroke", "black")
+            .attr("stroke-width",1);
 }
 
 function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {

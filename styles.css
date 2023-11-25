@@ -67,6 +67,7 @@ section {
     border: 1px solid #ddd;
     padding: 3px;
     font-size: 10px;
+    opacity: 0;
 }
 
 .bar-icon{
