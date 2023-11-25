@@ -1,5 +1,6 @@
 
 let tooltip = null;
+var chorotooltip;
 let reports_data = null;
 var width;
 var chorosvg;
@@ -100,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
             drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo);
+            chorotooltip= d3.select('#chorotooltip');
             drawViolinChart(reports_data);
             drawInnovative(reports_data);
 
@@ -147,248 +149,10 @@ function filterData(data,startDate,startHour,endDate,endHour){
 function drawStreamgraphFinal (reports_data,location) {
   drawStreamgraph(reports_data,location);
 
-// document.getElementById('timeInterval').addEventListener('change', function () {
-//   const selectedInterval = this.value;
-
-//   if (selectedInterval === 'minutes') {
-//     drawStreamgraphFiner(reports_data,location);
-//   } else if (selectedInterval === 'hours') {
-//     drawStreamgraph(reports_data,location);
-//   }
-// });
-
 }
 
 
-// function drawStreamgraphFiner(reports_data,location) {
 
-//   reports_data = reports_data.filter(entry => entry.location === location);
-
-//   reports_data = reports_data.map(obj => {
-//     let { location, impact, time, ...rest } = obj;
-  
-  
-//     let updatedObject = Object.fromEntries(
-//       Object.entries(rest).map(([key, value]) => [key, value + 1])
-//     );
-  
-//     return {
-//       location,
-//       impact,
-//       time,
-//       ...updatedObject,
-//     };
-//   });
-  
-//   reports_data = reports_data.map(obj => {
-//     let { location, impact, time, ...rest } = obj;
-  
-//     let updatedObject = Object.fromEntries(
-//       Object.entries(rest).map(([key, value]) => {
-//         return [key, (value === 0 && key !== "location" && key !== "impact" && key !== "time") ? value - 1 : value];
-//       })
-//     );
-  
-//     return {
-//       location,
-//       impact,
-//       time,
-//       ...updatedObject,
-//     };
-//   });
-
-//   const groupedData = reports_data.reduce((result, item) => {
-//     const date = item.time.toLocaleDateString();
-//     const hour = item.time.getHours();
-//     const minutes = item.time.getMinutes();
-//     const currLocation = item.location;
-
-//     const validProperties = Object.entries(item)
-//         .filter(([key, value]) =>  key !== 'location' && key != 'time' && key!='impact');
-
-//     if (validProperties.length > 0) {
-//       const dateTimeKey = `${date} ${hour}:${minutes}`; 
-
-//         if (!result[dateTimeKey]) {
-//             result[dateTimeKey] = {
-//                 datetime: dateTimeKey,
-//                 buildings: { sum: 0, count: 0 },
-//                 medical: { sum: 0, count: 0 },
-//                 power: { sum: 0, count: 0 },
-//                 roads_and_bridges: { sum: 0, count: 0 },
-//                 sewer_and_water: { sum: 0, count: 0 },
-//                 shake_intensity: { sum: 0, count: 0 },
-//             };
-//         }
-
-//         validProperties.forEach(([key, value]) => {
-//           if (value !== -1) {
-//             result[dateTimeKey][key].sum += parseFloat(value);
-//             result[dateTimeKey][key].count += 1;
-//           }
-//       });
-
-//       result[dateTimeKey].location = currLocation;
-//     }
-
-//     return result;
-// }, {});
-
-// for (let dateTimeKey in groupedData) {
-//     for (let key in groupedData[dateTimeKey]) {
-//         if (key !== 'location' && key !== 'impact') {
-//             if (groupedData[dateTimeKey][key].count > 0) {
-//                 groupedData[dateTimeKey][key] =
-//                     groupedData[dateTimeKey][key].sum / groupedData[dateTimeKey][key].count;
-//             } else {
-//                 groupedData[dateTimeKey][key] = 0; 
-//             }
-//         }
-//     }
-//     for (let key in groupedData[dateTimeKey]) {
-//         delete groupedData[dateTimeKey][key].sum;
-//         delete groupedData[dateTimeKey][key].count;
-//     }
-// }
-
-
-
-//     const newData = {};
-//     let index = 0;
-// for (const datetimeKey in groupedData) {
-//   newData[index] = {
-//     datetime: new Date(datetimeKey),
-//     buildings: groupedData[datetimeKey].buildings,
-//     location: groupedData[datetimeKey].location,
-//     medical: groupedData[datetimeKey].medical,
-//     power: groupedData[datetimeKey].power,
-//     roads_and_bridges: groupedData[datetimeKey].roads_and_bridges,
-//     sewer_and_water: groupedData[datetimeKey].sewer_and_water,
-//     shake_intensity: groupedData[datetimeKey].shake_intensity
-
-//   };
-//   index++;
-// }
-
-// // console.log(newData);
-
-// const arrayResult = Object.values(newData);
-
-// const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key !== 'location' );
-
-//   arrayResult.forEach(item => {
-//     item.datetime = item.datetime.getTime();
-//   });
-
-//   var margin = {top: 10, right: 30, bottom: 175, left: 50},
-//   width = 1200 - margin.left - margin.right,
-//   height = 400 - margin.top - margin.bottom;
-
-// var svg = d3.select("#streamgraph");
-// svg.selectAll("*").remove();
-
-// svg
-//   .attr("width", width + margin.left + margin.right)
-//   .attr("height", height + margin.top + margin.bottom);
-// // .append("g")
-// //   .attr("transform",
-// //         "translate(" + margin.left + "," + margin.top + ")");
-
-//   const stack = d3.stack().keys(keys).order(d3.stackOrderNone).offset(d3.stackOffsetWiggle);
-//   const stackedData = stack(arrayResult);
-
-//   const padding = 30;
-//   const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
-//   const yScale = d3.scaleLinear().domain([0, d3.max(stackedData, layer => d3.max(layer, d => d[1]))]).range([height, 0]);
-
-//   const area = d3.area()
-//     .x(d => xScale(d.data.datetime))
-//     .y0(d => yScale(d[0]))
-//     .y1(d => yScale(d[1]));
-
-//     var Tooltip = svg
-//     .append("text")
-//     .attr("x", 0)
-//     .attr("y", 0)
-//     .style("opacity", 0)
-//     .style("font-size", 17)
-
-//     var mouseover = function(d) {
-//         Tooltip.style("opacity", 1)
-//         d3.selectAll(".path").style("opacity", .2)
-//         d3.select(this)
-//           .style("stroke", "black")
-//           .style("opacity", 1)
-//       }
-
-//       var mousemove = function(d,i) {
-//         grp = keys[i]
-//         Tooltip.text(grp)
-//       }
-
-//       var mouseleave = function(d) {
-//         Tooltip.style("opacity", 0)
-//         d3.selectAll(".path").style("opacity", 1).style("stroke", "none")
-//        }
-
-//   svg.selectAll('path')
-//     .data(stackedData)
-//     .enter().append('path')
-//     .attr("class", "path")
-//       .attr('d', area)
-//       .attr('fill', (d, i) => d3.schemeCategory10[i])
-//       .on("mouseover", mouseover)
-//       .on("mousemove", mousemove)
-//       .on("mouseleave", mouseleave);
-
-//       const xAxis = d3.axisBottom(xScale).tickValues([
-//         new Date('4/6/2020'),
-//         new Date('4/7/2020'),
-//         new Date('4/8/2020'),
-//         new Date('4/9/2020'),
-//         new Date('4/10/2020'),
-//         new Date('4/11/2020')
-//       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
-
-//   svg.append('g')
-//     .attr('transform', 'translate(0,' + (height+margin.bottom-20) + ')')
-//     .call(xAxis);    
-
-//     svg.append("text")
-//   .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom+8) + ")")
-//   .style("text-anchor", "end")
-//   .text("Time");
-
-//   var legendSvg = d3.select("#legend");
-//   legendSvg.selectAll("*").remove();
-
-//   legendSvg
-//   .attr("width", 300) // Adjust the width as needed
-//   .attr("height", 400)
-//   .append("g")
-//   .attr("transform", "translate(" + (100) + "," + 0 + ")");
-
-// // Append the legend to the new SVG
-// const legend = legendSvg.append("g")
-// .attr("transform", "translate(75, 0)");
-
-// keys.forEach((key, i) => {
-//   const legendItem = legend.append("g")
-//     .attr("transform", "translate(0," + (i * 25) + ")"); // Adjusted spacing
-
-//   legendItem.append("rect")
-//     .attr("width", 18)
-//     .attr("height", 18)
-//     .attr("fill", d3.schemeCategory10[i]);
-
-//   legendItem.append("text")
-//     .attr("x", 24)
-//     .attr("y", 9)
-//     .attr("dy", ".35em")
-//     .style("text-anchor", "start")
-//     .text(key);
-// });
-// }
 
 function drawStreamgraph(reports_data, location) {
 
@@ -748,6 +512,28 @@ function hideTooltip() {
         .style("opacity", 0);
 }
 
+  function showchorotooltip (d, event,averagedImpact) {
+    var x_cood = event.pageX, y_cood = event.pageY;
+    chorotooltip
+        .style('top', y_cood + 'px')
+        .style('left', x_cood + 'px');
+  
+        const name = d.srcElement.__data__.properties.Nbrhood;
+        const id = d.srcElement.__data__.properties.Id;
+        chorotooltip.select("#tooltip-title").text(name);
+        chorotooltip.select("#tooltip-x").text(`Average Impact - ${averagedImpact.get(id)}`);
+        chorotooltip
+        .transition()
+        .duration(200)
+        .style("opacity", 0.9);
+  }
+  function hidechorotooltip (){
+    chorotooltip
+              .transition()
+              .duration(200)
+              .style("opacity", 0);
+}
+
 function drawChoropleth (reports_data,topo){
   d3.select('#my_dataviz')
   .selectAll('*')
@@ -793,7 +579,9 @@ function drawChoropleth (reports_data,topo){
           .transition()
           .duration(200)
           .style("stroke", "black")
-          .style("stroke-width","2px")
+          .style("stroke-width","2px");
+
+        showchorotooltip(d,event,averagedImpact);
       }
 
       let mouseLeave = function(d) {
@@ -801,7 +589,8 @@ function drawChoropleth (reports_data,topo){
         .transition()
         .duration(200)
         .style("stroke", "black")
-        .style("stroke-width","0px")
+        .style("stroke-width","0px");
+        hidechorotooltip();
       }
 
       let g = chorosvg.append("g")
@@ -827,7 +616,7 @@ function drawChoropleth (reports_data,topo){
       .on("click", function(d) {
           // console.log(d);
           const selected = d.srcElement.__data__.properties.Id;
-          const name = d.srcElement.__data__.properties.Nbrhood;
+          const name = d.srcElement.__data__.properties.Id;
           // console.log(selected)
           let index = selectedStates.indexOf(name);
 
@@ -852,7 +641,7 @@ function drawChoropleth (reports_data,topo){
               }
               else{
               
-              return selectedStates.includes(state.properties.Nbrhood) ? 1 : 0.2;
+              return selectedStates.includes(state.properties.Id) ? 1 : 0.2;
               }
             })
 
