@@ -34,7 +34,19 @@
                     <h2>Widgets</h2>
                     <!-- Time slider and dropdown go here -->
                     <div class="row">
-                        Time Slider: <input type="range" min="0" max="100" value="50"> <br>
+
+                        <label for="dateInput1">Date 1:</label>
+                        <input type="date" id="dateInput1" class="dateInput" min="2020-04-06" max="2020-04-11" value = "2020-04-06" required>
+                    
+                        <label for="hourInput1">Hour 1:</label>
+                        <input type="time" id="hourInput1" class="hourInput" step="3600" value="00:00"   required>
+                    
+                        <label for="dateInput2">Date 2:</label>
+                        <input type="date" id="dateInput2" class="dateInput" min="2020-04-06" max="2020-04-11"  value = "2020-04-11" required>
+                    
+                        <label for="hourInput2">Hour 2:</label>
+                        <input type="time" id="hourInput2" class="hourInput" step="3600" value="23:00"  required>
+
                         Dropdown: <select>
                             <option value="option1">Option 1</option>
                             <option value="option2">Option 2</option>

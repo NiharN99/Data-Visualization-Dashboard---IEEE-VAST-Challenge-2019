@@ -12,14 +12,65 @@ var pieChartInstruct;
 var pieLocation;
 var violinInstruct;
 var return_button;
+var startDate, startHour, endDate, endHour;
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    startDate='2020-04-06'
+    startHour='00:00'
+    endDate='2020-04-11'
+    endHour='23:00'
 
       chorosvg = d3.select("#my_dataviz"),
       chorowidth = +chorosvg.attr("width"),
       choroheight = +chorosvg.attr("height");
 
+      var dateInput1 = document.querySelectorAll('#dateInput1');
+    var hourInput1 = document.querySelectorAll('#hourInput1');
 
+    var dateInput2 = document.querySelectorAll('#dateInput2');
+    var hourInput2 = document.querySelectorAll('#hourInput2');
+
+    dateInput1.forEach(function (dateInput1) {
+      dateInput1.addEventListener('input', handleInputChangeFirstDate);
+    });
+
+    hourInput1.forEach(function (hourInput1) {
+      hourInput1.addEventListener('input', handleInputChangeFirstHour);
+    });
+
+    dateInput2.forEach(function (dateInput2) {
+      dateInput2.addEventListener('input', handleInputChangeSecondDate);
+    });
+
+    hourInput2.forEach(function (hourInput2) {
+      hourInput2.addEventListener('input', handleInputChangeSecondHour);
+    });
+
+    function handleInputChangeFirstDate(event) {
+      startDate = event.target.value;
+      console.log('first date' + ':', startDate);
+      filterData(reports_data,startDate,startHour,endDate,endHour);
+    }
+
+    function handleInputChangeSecondDate(event) {
+      endDate = event.target.value;
+      console.log('end date' + ':', endDate);
+      filterData(reports_data,startDate,startHour,endDate,endHour);
+    }
+
+    function handleInputChangeFirstHour(event) {
+      startHour = event.target.value;
+      console.log('first hour' + ':', startHour);
+      filterData(reports_data,startDate,startHour,endDate,endHour);
+    }
+
+    function handleInputChangeSecondHour(event) {
+      endHour = event.target.value;
+      console.log('end hour' + ':', endHour);
+      filterData(reports_data,startDate,startHour,endDate,endHour);
+    }
+    console.log(startDate, startHour, endDate, endHour);
     
 
    Promise.all([d3.json("Data/StHimark.geojson"),
@@ -41,6 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
 
+
+
             drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
@@ -53,6 +106,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     
 });
+
+function update_charts(filtered_data){
+  drawChoropleth(filtered_data,topo);
+  drawViolinChart(filtered_data);
+
+}
+function convertDate(startDate,startHour){
+  const dateStr = startDate;
+  const timeStr = startHour;
+  
+  // Split the date and time strings to extract year, month, day, hour, and minute
+  const [year, month, day] = dateStr.split('-');
+  const [hour, minute] = timeStr.split(':');
+  
+  // Create a new Date object by passing year, month (0-indexed), day, hour, minute, and second (set to 0)
+  return new Date(year, month - 1, day, hour, minute, 0);
+}
+function filterData(data,startDate,startHour,endDate,endHour){
+
+  startDt = convertDate(startDate,startHour);
+  endDt= convertDate(endDate,endHour);
+
+  let filtered_data = data.filter(function (d) {
+    var currentDate = new Date(d.time);
+    var day = currentDate.getDate();
+    var hour = currentDate.getHours();
+  
+    return currentDate >= startDt && currentDate <= endDt;
+  });
+
+  console.log(filtered_data);
+
+  update_charts(filtered_data);
+}
+
+
+
 
 function drawStreamgraphFinal (reports_data,location) {
   drawStreamgraph(reports_data,location);
@@ -659,6 +749,9 @@ function hideTooltip() {
 }
 
 function drawChoropleth (reports_data,topo){
+  d3.select('#my_dataviz')
+  .selectAll('*')
+  .remove();
   var colorScale = d3.scaleThreshold()
       .domain([0, 2, 4, 6, 8, 10])
       .range(d3.schemeBlues[7]);
@@ -1027,15 +1120,20 @@ function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
   return positions;
 }
 
-function drawViolinChart(){
+function drawViolinChart(data){
 
-    var startDate = new Date('4/6/2020 0:00');
-    var endDate = new Date('4/11/2020 1:10');
+  console.log("Here");
 
-    data = reports_data.filter(function (d) {
-        var currentDate = new Date(d.time);
-        return currentDate >= startDate && currentDate <= endDate;
-    });
+  d3.select('#mainViolin')
+  .selectAll('*')
+  .remove();
+    // var startDate = new Date('4/6/2020 0:00');
+    // var endDate = new Date('4/11/2020 1:10');
+
+    // data = reports_data.filter(function (d) {
+    //     var currentDate = new Date(d.time);
+    //     return currentDate >= startDate && currentDate <= endDate;
+    // });
 
    mainViolinDiv=document.getElementById("mainViolinDiv");
    secondViolinDiv=document.getElementById("secondViolinDiv");

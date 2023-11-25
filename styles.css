@@ -121,3 +121,12 @@ footer {
     color: black;             /* Black text on hover */
     border: 2px solid #4CAF50; /* Green border on hover */
   }
+
+   /* Hide the minutes in the time input */
+   input[type="time"]::-webkit-datetime-edit-minute-field {
+    display: none;
+  }
+
+  input[type="time"]::-webkit-datetime-edit-ampm-field {
+    display: none;
+  }
