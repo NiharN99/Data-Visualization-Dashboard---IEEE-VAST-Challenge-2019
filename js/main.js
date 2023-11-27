@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraphFiner(reports_data);
 
 
-
+              filtered_data_violin=reports_data;
             drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
@@ -141,6 +141,8 @@ function filterData(data,startDate,startHour,endDate,endHour){
 
   console.log(filtered_data);
 filtered_data_violin=filtered_data;
+console.log("inside filterData");
+console.log(filtered_data_violin);
   update_charts(filtered_data);
 }
 
@@ -949,7 +951,7 @@ function drawViolinChart(data){
     //console.log(i++);
 
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 10, bottom: 30, left: 10},
+    var margin = {top: 10, right: 10, bottom: 30, left: 20},
     width = 760 - margin.left - margin.right,
     height = 490 - margin.top - margin.bottom;
 
@@ -1165,7 +1167,11 @@ function drawSecondaryViolinChart(data, targetLocation){
       return_button = document.getElementById("return_button");
       return_button.style.display='block';
 
-    return_button.onclick=function(){drawViolinChart(filtered_data_violin);};
+    return_button.onclick=function(){
+      console.log("inside return button");
+      console.log(filtered_data_violin); 
+      drawViolinChart(filtered_data_violin);
+    };
 }
 
 function drawPieChart(targetLocation) {
