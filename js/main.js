@@ -585,7 +585,7 @@ function hideTooltip() {
   function showchorotooltip (d, event,averagedAttribute) {
     var x_cood = event.pageX, y_cood = event.pageY;
     chorotooltip
-        .style('top', y_cood + 'px')
+        .style('top', (y_cood-300) + 'px')
         .style('left', x_cood + 'px');
   
         const name = d.srcElement.__data__.properties.Nbrhood;
