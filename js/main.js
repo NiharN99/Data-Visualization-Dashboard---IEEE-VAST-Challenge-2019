@@ -14,6 +14,7 @@ var pieLocation;
 var violinInstruct;
 var return_button;
 var startDate, startHour, endDate, endHour;
+var filtered_data_violin;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -139,7 +140,7 @@ function filterData(data,startDate,startHour,endDate,endHour){
   });
 
   console.log(filtered_data);
-
+filtered_data_violin=filtered_data;
   update_charts(filtered_data);
 }
 
@@ -272,8 +273,8 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 20, bottom: 175, left: 50};
-  width = 1200 - margin.left - margin.right,
+  var margin = {top: 10, right: 0, bottom: 175, left: 25};
+  width = 900 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
   var svg = d3.select("#streamgraph");
@@ -281,7 +282,7 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
 
 
 svg
-  .attr("width", width + margin.left + margin.right)
+  .attr("width", width + margin.left + margin.right - 100)
   .attr("height", height + margin.top + margin.bottom);
 
   // svg.append("g")
@@ -359,24 +360,25 @@ svg
   legendSvg.selectAll("*").remove();
 
 legendSvg
-  .attr("width", 300) 
+  .attr("width", 200) 
   .attr("height", 400);
 
   const legend = legendSvg.append("g")
-  .attr("transform", "translate(75, 0)");
+  .attr("transform", "translate(20, 0)");
 
 
 keys.forEach((key, i) => {
   const legendItem = legend.append("g")
     .attr("transform", "translate(0," + (i * 25) + ")"); 
   legendItem.append("rect")
+  .attr("y", 60)
     .attr("width", 18)
     .attr("height", 18)
     .attr("fill", d3.schemeCategory10[i]);
 
   legendItem.append("text")
     .attr("x", 24)
-    .attr("y", 9)
+    .attr("y", 70)
     .attr("dy", ".35em")
     .style("text-anchor", "start")
     .text(key);
@@ -911,7 +913,8 @@ function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
 
 function drawViolinChart(data){
 
-  console.log("Here");
+  console.log("Here at violin chart");
+  console.log(data);
 
   d3.select('#mainViolin')
   .selectAll('*')
@@ -1032,9 +1035,9 @@ function drawViolinChart(data){
            const selectedLocation = d[0];
            console.log("selected Location : ", selectedLocation);
 
-           filteredData = data.filter(l => l.location===selectedLocation);
-            console.log("filtered data : ", filteredData);
-           drawSecondaryViolinChart(filteredData, selectedLocation);
+           filteredDataViolin = data.filter(l => l.location===selectedLocation);
+            console.log("filtered data : ", filteredDataViolin);
+           drawSecondaryViolinChart(filteredDataViolin, selectedLocation);
            drawPieChart(selectedLocation);
        });
     ;
@@ -1162,7 +1165,7 @@ function drawSecondaryViolinChart(data, targetLocation){
       return_button = document.getElementById("return_button");
       return_button.style.display='block';
 
-    return_button.onclick=function(){drawViolinChart();};
+    return_button.onclick=function(){drawViolinChart(filtered_data_violin);};
 }
 
 function drawPieChart(targetLocation) {

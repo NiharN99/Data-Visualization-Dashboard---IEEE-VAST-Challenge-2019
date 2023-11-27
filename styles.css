@@ -122,11 +122,43 @@ footer {
     border: 2px solid #4CAF50; /* Green border on hover */
   }
 
-   /* Hide the minutes in the time input */
-   input[type="time"]::-webkit-datetime-edit-minute-field {
-    display: none;
+  .row-3 {
+    display: flex;
+    justify-content: space-between; /* Adjusts the spacing between the cards */
+    flex-wrap: wrap;
+    margin-bottom: 1em;
   }
+  
+  .card-stream {
+    background-color: #fff;
+    padding: 1em;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1em;
+    width: 65%; /* Adjust width as needed */
+    height: 600px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+ 
+}
 
-  input[type="time"]::-webkit-datetime-edit-ampm-field {
-    display: none;
-  }
+.card-innovative {
+    background-color: #fff;
+    padding: 1em;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1em;
+    width: 32%; /* Adjust width as needed */
+    height: 600px;
+    box-sizing: border-box; /* Ensure padding is included in the width */
+
+}
+
+  /* .card-streamgraph { */
+    /* flex-basis: 70%; 80% width of the parent container */
+    /* max-width: 70%; Optional, to ensure it doesn't grow beyond 80% */
+  /* } */
+  
+  /* .card-innovative { */
+    /* flex-basis: 30%; 20% width of the parent container */
+    /* max-width: 30%; Optional, to ensure it doesn't grow beyond 20% */
+  /* } */
