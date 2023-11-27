@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
-            drawBarChart(14);
+            //drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo,'impact');
             chorotooltip= d3.select('#chorotooltip');
@@ -469,6 +469,8 @@ function drawBarChart(location) {
     var averages = calculateAverages(reports_data, location);
     console.log(averages);
 
+    clearBarGraph();
+
     const margin = { top: 20, right: 20, bottom: 50, left: 60 };
     const width = 700 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
@@ -489,48 +491,49 @@ function drawBarChart(location) {
         .range([height, 0]);
 
    
-    svg.selectAll(".bar-image")
-        .data(Object.entries(averages))
-        .enter()
-        .append("image")
-        .attr("class", "bar-image")
-        .attr("id", d => `${d[0]}`)
-        .attr("width", 100)
-        .attr("height", d => height- yScale(d[1]))
-        .attr("xlink:href", d => `/Data/vectors/${d[0]}.svg`)
-        .attr("transform", d => `translate(${xScale(d[0])}, ${yScale(d[1])})`)
-        .attr("preserveAspectRatio", "none")
-        .on('mouseover', function(event, d){
-            console.log("hovered on ", d);
-            showTooltip(d, event);
-        })
-        .on('mouseout', function(event, d){
-            hideTooltip(d, event);
-        });
+    // ---- CODE FOR SVGs IN BAR. -----
+    // svg.selectAll(".bar-image")
+    //     .data(Object.entries(averages))
+    //     .enter()
+    //     .append("image")
+    //     .attr("class", "bar-image")
+    //     .attr("id", d => `${d[0]}`)
+    //     .attr("width", 100)
+    //     .attr("height", d => height- yScale(d[1]))
+    //     .attr("xlink:href", d => `/Data/vectors/${d[0]}.svg`)
+    //     .attr("transform", d => `translate(${xScale(d[0])}, ${yScale(d[1])})`)
+    //     .attr("preserveAspectRatio", "none")
+    //     .on('mouseover', function(event, d){
+    //         console.log("hovered on ", d);
+    //         showTooltip(d, event);
+    //     })
+    //     .on('mouseout', function(event, d){
+    //         hideTooltip(d, event);
+    //     });
 
 
     // ---- CODE FOR RECTANGLES IN BAR. -----
-    // svg.selectAll("rect")
-    //     .data(Object.entries(averages))
-    //     .enter()
-    //     .append("rect")
-    //     .attr("x", d => xScale(d[0]))
-    //     .attr("y", d => yScale(d[1]))
-    //     .attr("width", xScale.bandwidth())
-    //     .attr("height", d => height - yScale(d[1]))
-    //     .attr("fill", "lightblue")
-    //     .on('mouseover', function (event, d) {
-    //         console.log("hovered on", d);
-    //         var param = d[0], value = d[1];
-    //         d3.select(this).attr("fill", "steelblue");
-    //         d3.select("#chart-bar").style("background-image", `/Data/icons/${d[0]}.png`);
-    //         //showTooltip(reports_data, location, event);
-    //     })
-    //     .on('mouseout', function (event, d) {
-    //         // Change the fill back to steelblue on hover out
-    //         d3.select(this).attr("fill", "lightblue");
-    //         d3.select("#chart-bar").style("background-image", "none");
-    //     });
+    svg.selectAll("rect")
+        .data(Object.entries(averages))
+        .enter()
+        .append("rect")
+        .attr("x", d => xScale(d[0]))
+        .attr("y", d => yScale(d[1]))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => height - yScale(d[1]))
+        .attr("fill", "lightblue")
+        .on('mouseover', function (event, d) {
+            console.log("hovered on", d);
+
+            d3.select(this).attr("fill", "steelblue");
+            showTooltip(d, event);
+        
+        })
+        .on('mouseout', function (event, d) {
+            // Change the fill back to steelblue on hover out
+            d3.select(this).attr("fill", "lightblue");
+            hideTooltip(d, event);
+        });
 
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
@@ -544,14 +547,18 @@ function drawBarChart(location) {
 
 }
 
+function clearBarGraph(){
+    d3.select("#chart-bar").select("g").remove();
+}
+
 function drawLineChart() {
 
 }
 
-function calculateAverages(data, location) {
+function calculateAverages(data, locations) {
     const parameters = ["buildings", "medical", "power", "roads_and_bridges", "sewer_and_water", "shake_intensity"];
 
-    const locationData = data.filter(entry => +entry.location === location);
+    const locationData = data.filter(entry => locations.includes(+entry.location));
     const averages = {};
 
     parameters.forEach(parameter => {
@@ -749,14 +756,14 @@ function drawChoropleth (reports_data,topo,selectedValue){
 
               }
               else{
-              
-              return selectedStates.includes(state.properties.Id) ? 1 : 0.2;
+                return selectedStates.includes(state.properties.Id) ? 1 : 0.2;
               }
             })
             console.log(selectedStates);
             if (selectedStates.length === 0) {
               clearStreamGraph();
               clearInnovativeChart();
+              clearBarGraph();
               StreamInstruct=document.getElementById("StreamInstruct");
               StreamInstruct.style.display="block";
               InnovativeInstruct=document.getElementById("InnovativeInstruct");
@@ -765,7 +772,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
               myParagraph.innerHTML = "";
             } else {
               drawStreamgraphFinal(filteredData,selectedStates);
-              
+              drawBarChart(selectedStates);
             }
           
 
@@ -827,6 +834,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
       
           clearStreamGraph();
           clearInnovativeChart();
+          clearBarGraph();
           
           StreamInstruct=document.getElementById("StreamInstruct");
           StreamInstruct.style.display="block";
