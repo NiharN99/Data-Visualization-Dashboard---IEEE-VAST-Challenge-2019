@@ -604,6 +604,7 @@ function hideTooltip() {
               .style("opacity", 0);
 }
 
+
 function drawChoropleth (reports_data,topo,selectedValue){
   d3.select('#my_dataviz')
   .selectAll('*')
@@ -612,9 +613,13 @@ function drawChoropleth (reports_data,topo,selectedValue){
   clearInnovativeChart();
   const myParagraph = document.getElementById('InnovativeHeading');
   myParagraph.innerHTML = "";
+
+
   var colorScale = d3.scaleThreshold()
       .domain([0, 2, 4, 6, 8, 10])
       .range(d3.schemeBlues[7]);
+
+
 
       var startDate = new Date('4/6/2020 0:00');
       var endDate = new Date('4/11/2020 0:00');
@@ -680,6 +685,9 @@ function drawChoropleth (reports_data,topo,selectedValue){
       }
 
       let g = chorosvg.append("g")
+
+
+
       g.selectAll("path")
       .data(topo.features)
       .enter()
@@ -743,6 +751,56 @@ function drawChoropleth (reports_data,topo,selectedValue){
           
 
       });
+
+      g.attr("transform", "translate(0, -70)");
+           // Assuming you have defined choroheight and chorowidth earlier
+           let legend = chorosvg.append("g")
+           .attr("class", "legend")
+           .attr("transform", "translate(300,400)"); // Adjust the position as needed
+   
+         
+          function createLegend(colorScale) {
+            let legendScale = d3.scaleLinear()
+              .domain([0, 10]) // Modify this according to your data range
+              .range([0, 150]); // Adjust the range based on the size of the legend
+          
+            let legendAxis = d3.axisBottom(legendScale)
+              .tickValues(colorScale.domain())
+              .tickFormat(d3.format(".1f"));
+          
+            legend.append("g")
+              .attr("class", "legend-axis")
+              .attr("transform", "translate(0, 20)")
+              .call(legendAxis);
+          
+            legend.selectAll(".legend-bar")
+              .data(colorScale.range().map(function(color) {
+                let d = colorScale.invertExtent(color);
+                if (!d[0]) d[0] = legendScale.domain()[0];
+                if (!d[1]) d[1] = legendScale.domain()[1];
+                return d;
+              }))
+              .enter().append("rect")
+              .attr("class", "legend-bar")
+              .attr("x", function(d) {
+                return legendScale(d[0]);
+              })
+              .attr("y", 0)
+              .attr("width", function(d) {
+                return legendScale(d[1]) - legendScale(d[0]);
+              })
+              .attr("height", 10)
+              .style("fill", function(d) {
+                return colorScale(d[0]);
+              });
+          }
+
+
+        createLegend(colorScale);
+
+ 
+
+
 }
 
 function drawInnovative(reports_data,selectedUtility)
