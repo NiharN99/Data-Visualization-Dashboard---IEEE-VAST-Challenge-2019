@@ -9,12 +9,14 @@ var choroheight;
 var selectedStates = [];
 var mainViolinDiv;
 var secondViolinDiv;
-var pieChartInstruct;
+var pieChartInstruct; 
 var pieLocation;
 var violinInstruct;
 var return_button;
 var startDate, startHour, endDate, endHour;
 var filtered_data_violin;
+var InnovativeInstruct;
+var StreamInstruct;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -211,6 +213,12 @@ function clearInnovativeChart(){
 function drawStreamgraph(reports_data, location) {
 
   clearInnovativeChart();
+  StreamInstruct=document.getElementById("StreamInstruct");
+  StreamInstruct.style.display="none";
+  
+  InnovativeInstruct=document.getElementById("InnovativeInstruct");
+  InnovativeInstruct.style.display="block";
+
   const myParagraph = document.getElementById('InnovativeHeading');
   myParagraph.innerHTML = "";
 
@@ -612,6 +620,12 @@ function drawChoropleth (reports_data,topo,selectedValue){
   .remove();
   clearStreamGraph();
   clearInnovativeChart();
+
+  StreamInstruct=document.getElementById("StreamInstruct");
+  StreamInstruct.style.display="block";
+  InnovativeInstruct=document.getElementById("InnovativeInstruct");
+  InnovativeInstruct.style.display="block";
+
   const myParagraph = document.getElementById('InnovativeHeading');
   myParagraph.innerHTML = "";
 
@@ -743,6 +757,10 @@ function drawChoropleth (reports_data,topo,selectedValue){
             if (selectedStates.length === 0) {
               clearStreamGraph();
               clearInnovativeChart();
+              StreamInstruct=document.getElementById("StreamInstruct");
+              StreamInstruct.style.display="block";
+              InnovativeInstruct=document.getElementById("InnovativeInstruct");
+              InnovativeInstruct.style.display="block";
               const myParagraph = document.getElementById('InnovativeHeading');
               myParagraph.innerHTML = "";
             } else {
@@ -807,6 +825,9 @@ function drawChoropleth (reports_data,topo,selectedValue){
 function drawInnovative(reports_data,selectedUtility)
 {
   clearInnovativeChart();
+  InnovativeInstruct=document.getElementById("InnovativeInstruct");
+  InnovativeInstruct.style.display="none";
+
   var startDate = reports_data[0].time; //TODO
   var endDate = reports_data[reports_data.length-1].time; //TODO
   // endDate.setHours(endDate.getHours()-1);
