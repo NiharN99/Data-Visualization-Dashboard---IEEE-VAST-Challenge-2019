@@ -1249,7 +1249,7 @@ function drawViolinChart(data){
            filteredDataViolin = data.filter(l => l.location===selectedLocation);
             console.log("filtered data : ", filteredDataViolin);
            drawSecondaryViolinChart(filteredDataViolin, selectedLocation);
-           drawPieChart(selectedLocation);
+           drawPieChart(selectedLocation,data);
        });
     ;
    
@@ -1383,7 +1383,7 @@ function drawSecondaryViolinChart(data, targetLocation){
     };
 }
 
-function drawPieChart(targetLocation) {
+function drawPieChart(targetLocation,filteredData) {
     //console.log("Drawing Pie Chart");
 
     // Date filter
@@ -1398,13 +1398,13 @@ function drawPieChart(targetLocation) {
   //  var targetLocation = "18";
     
     // Filter the CSV data based on both time and location
-    var filteredData = reports_data.filter(function (d) {
-        var currentDate = new Date(d.time);
-        return currentDate >= startDate && currentDate <= endDate && d.location === targetLocation;
-    });
+    // var filteredData = reports_data.filter(function (d) {
+    //     var currentDate = new Date(d.time);
+    //     return currentDate >= startDate && currentDate <= endDate && d.location === targetLocation;
+    // });
 
     // Log the filtered data
-    console.log("Filtered Data:", filteredData);
+    // console.log("Filtered Data:", filteredData);
 
     // Group the filtered data by location and calculate the average impact
     var groupedData = d3.group(filteredData, d => d.location);
@@ -1466,7 +1466,7 @@ function drawPieChart(targetLocation) {
 
     const colorScale = d3.scaleOrdinal()
         .domain(["-1.0", "Other"])
-        .range(["brown", "gold"]);
+        .range(["#24cca4", "#ec4c4c"]);
 
     categories.forEach((category, index) => {
         const pieData = getPercentageDataForCategory(category);
