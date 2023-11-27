@@ -136,7 +136,7 @@ footer {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 1em;
     width: 65%; /* Adjust width as needed */
-    height: 600px;
+    height: 550px;
     box-sizing: border-box; /* Ensure padding is included in the width */
  
 }

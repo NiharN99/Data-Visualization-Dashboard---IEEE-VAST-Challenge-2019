@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 item.time = new Date(item.time);
               });
-             let location = [1,2,3,4,5,6,7];
+             let location = [7];
             // console.log(reports_data);
             // drawStreamgraph(reports_data);
             // drawStreamgraphFiner(reports_data);
@@ -275,8 +275,8 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 0, bottom: 175, left: 25};
-  width = 900 - margin.left - margin.right,
+  var margin = {top: 10, right: 200, bottom: 175, left: 200};
+  width = 1200 - margin.left - margin.right,
   height = 400 - margin.top - margin.bottom;
 
   var svg = d3.select("#streamgraph");
@@ -354,19 +354,19 @@ svg
     .call(xAxis);    
 
     svg.append("text")
-  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom + 9) + ")")
+  .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom + 10) + ")")
   .style("text-anchor", "end")
   .text("Time");
 
-  var legendSvg = d3.select("#legend");
-  legendSvg.selectAll("*").remove();
+  // var legendSvg = d3.select("#legend");
+  // legendSvg.selectAll("*").remove();
 
-legendSvg
-  .attr("width", 200) 
-  .attr("height", 400);
+// legendSvg
+//   .attr("width", 200) 
+//   .attr("height", 400);
 
-  const legend = legendSvg.append("g")
-  .attr("transform", "translate(20, 0)");
+  const legend = svg.append("g")
+  .attr("transform", "translate(875, 0)");
 
 
 keys.forEach((key, i) => {
