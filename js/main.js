@@ -27,6 +27,14 @@ document.addEventListener('DOMContentLoaded', function () {
       chorowidth = +chorosvg.attr("width"),
       choroheight = +chorosvg.attr("height");
 
+      var dropdown = document.getElementById('myDropdown');
+
+      dropdown.addEventListener('change', function() {
+          var selectedValue = dropdown.value;
+          console.log('Selected value: ' + selectedValue);
+
+        });
+
     // Date and hour Inputs
     var dateInput1 = document.getElementById('dateInput1');
     var hourInput1 = document.getElementById('hourInput1');
