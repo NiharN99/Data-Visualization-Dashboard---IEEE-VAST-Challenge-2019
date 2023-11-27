@@ -16,7 +16,7 @@ var return_button;
 var startDate, startHour, endDate, endHour;
 var filtered_data_violin;
 var InnovativeInstruct;
-var StreamInstruct;
+var StreamInstruct, barInstruct;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -470,6 +470,8 @@ function drawBarChart(location) {
     console.log(averages);
 
     clearBarGraph();
+    barInstruct=document.getElementById("BarInstruct");
+    barInstruct.style.display="none";
 
     const margin = { top: 20, right: 20, bottom: 50, left: 60 };
     const width = 700 - margin.left - margin.right;
@@ -766,6 +768,8 @@ function drawChoropleth (reports_data,topo,selectedValue){
               clearBarGraph();
               StreamInstruct=document.getElementById("StreamInstruct");
               StreamInstruct.style.display="block";
+              barInstruct=document.getElementById("BarInstruct");
+              barInstruct.style.display="block";
               InnovativeInstruct=document.getElementById("InnovativeInstruct");
               InnovativeInstruct.style.display="block";
               const myParagraph = document.getElementById('InnovativeHeading');
