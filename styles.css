@@ -162,3 +162,28 @@ footer {
     /* flex-basis: 30%; 20% width of the parent container */
     /* max-width: 30%; Optional, to ensure it doesn't grow beyond 20% */
   /* } */
+
+  #choro_div {
+    position: relative;
+}
+
+#myDropdown {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px;
+}
+
+#utilityDropdown
+{
+    position: absolute;
+    margin-right: 100;
+    top: 0;
+    right: 0;
+}
+
+#myDropdown option {
+    background-color: #f4f4f4;
+}

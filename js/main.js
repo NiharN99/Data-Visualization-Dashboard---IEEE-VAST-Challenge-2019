@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dropdown.addEventListener('change', function() {
           var selectedValue = dropdown.value;
           console.log('Selected value: ' + selectedValue);
-
+          drawChoropleth(reports_data,topo,selectedValue);
         });
 
     // Date and hour Inputs
@@ -144,17 +144,19 @@ document.addEventListener('DOMContentLoaded', function () {
             tooltip =  d3.select('#tooltip');
             drawBarChart(14);
             console.log(reports_data);
-            drawChoropleth(reports_data,topo);
+            drawChoropleth(reports_data,topo,'impact');
             chorotooltip= d3.select('#chorotooltip');
             drawViolinChart(reports_data);
-            drawInnovative(reports_data);
+            // drawInnovative(reports_data);
 
         });
     
 });
 
 function update_charts(filtered_data){
-  drawChoropleth(filtered_data,topo);
+  drawChoropleth(filtered_data,topo,'impact');
+  var dropdown = document.getElementById('myDropdown');
+  dropdown.value = 'SelectOption';
   drawViolinChart(filtered_data);
 
 }
@@ -199,10 +201,17 @@ function drawStreamgraphFinal (reports_data,location) {
 function clearStreamGraph(){
   d3.select("#streamgraph").selectAll("*").remove();
 }
+function clearInnovativeChart(){
+  d3.select("#innovative").selectAll("*").remove();
+}
 
 
 
 function drawStreamgraph(reports_data, location) {
+
+  clearInnovativeChart();
+  const myParagraph = document.getElementById('InnovativeHeading');
+  myParagraph.innerHTML = "";
 
   reports_data = reports_data.filter(entry => location.includes(entry.location));
 
@@ -375,6 +384,14 @@ svg
         d3.selectAll(".path").style("opacity", 1).style("stroke", "none")
        }
 
+       var mouseClick = function(d,i) {
+        selectedUtility = i["key"].toString();
+        clearInnovativeChart();
+        drawInnovative(reports_data,selectedUtility)
+       }
+
+      //  console.log("Stacked Data:" , stackedData);
+
   svg.selectAll('path')
     .data(stackedData)
     .enter().append('path')
@@ -383,16 +400,20 @@ svg
       .attr('fill', (d, i) => d3.schemeCategory10[i])
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
-      .on("mouseleave", mouseleave);
+      .on("mouseleave", mouseleave)
+      .on("click" , mouseClick);
 
-      const xAxis = d3.axisBottom(xScale).tickValues([
-        // new Date('4/6/2020'),
-        new Date('4/7/2020'),
-        new Date('4/8/2020'),
-        new Date('4/9/2020'),
-        new Date('4/10/2020'),
-        // new Date('4/11/2020')
-      ]).tickFormat(d3.timeFormat("%b %d, %Y"));
+      const xAxis = d3.axisBottom(xScale)
+      // .tickValues([
+      //   new Date('4/6/2020'),
+      //   new Date('4/7/2020'),
+      //   new Date('4/8/2020'),
+      //   new Date('4/9/2020'),
+      //   new Date('4/10/2020'),
+      //   new Date('4/11/2020')
+      // ])
+      .tickFormat(d3.timeFormat("%b %d, %Y %H:%M"))
+      .ticks(5);
 
   svg.append('g')
     .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-30) + ')')
@@ -583,10 +604,14 @@ function hideTooltip() {
               .style("opacity", 0);
 }
 
-function drawChoropleth (reports_data,topo){
+function drawChoropleth (reports_data,topo,selectedValue){
   d3.select('#my_dataviz')
   .selectAll('*')
   .remove();
+  clearStreamGraph();
+  clearInnovativeChart();
+  const myParagraph = document.getElementById('InnovativeHeading');
+  myParagraph.innerHTML = "";
   var colorScale = d3.scaleThreshold()
       .domain([0, 2, 4, 6, 8, 10])
       .range(d3.schemeBlues[7]);
@@ -604,7 +629,7 @@ function drawChoropleth (reports_data,topo){
       var groupedData = d3.group(filteredData, d => d.location);
       // console.log(groupedData);
 
-      var selectedValue = 'impact'
+      // var selectedValue = 'impact'
 
       // var averagedImpact = new Map();
       // groupedData.forEach((value, key) => {
@@ -708,25 +733,38 @@ function drawChoropleth (reports_data,topo){
             console.log(selectedStates);
             if (selectedStates.length === 0) {
               clearStreamGraph();
+              clearInnovativeChart();
+              const myParagraph = document.getElementById('InnovativeHeading');
+              myParagraph.innerHTML = "";
             } else {
-              drawStreamgraphFinal(reports_data,selectedStates);
+              drawStreamgraphFinal(filteredData,selectedStates);
+              
             }
           
 
       });
 }
 
-function drawInnovative(reports_data)
+function drawInnovative(reports_data,selectedUtility)
 {
-  var startDate = new Date('4/6/2020 0:00');
-  var endDate = new Date('4/11/2020 0:00');
+  clearInnovativeChart();
+  var startDate = reports_data[0].time; //TODO
+  var endDate = reports_data[reports_data.length-1].time; //TODO
+  // endDate.setHours(endDate.getHours()-1);
+  console.log("End Date:" , endDate);
 
-  // Filter the CSV data based on the date range
+  const myParagraph = document.getElementById('InnovativeHeading');
+  myParagraph.innerHTML = selectedUtility;
+
   var filteredData = reports_data.filter(function (d) {
     var currentDate = new Date(d.time);
     return currentDate >= startDate && currentDate <= endDate;
   });
   console.log("Innovative fitler", filteredData);
+
+  // filteredData = filteredData.map(({ time,[selectedUtility]: variable  }) => ({ time,[selectedUtility]: variable }));
+  
+  console.log(filteredData);
 
   const filteredByDate = filteredData.filter((record) => {
     const recordDate = new Date(record.time);
@@ -754,8 +792,8 @@ function drawInnovative(reports_data)
   startTimeRange2.setHours(startTimeRange2.getHours() - 1); // Start time + 1 hour
   endTimeRange2.setHours(endTimeRange2.getHours()); // End time - 1 hour
   
-  const filteredSewerAndWaterData1 = filterDataByCategoryAndTimeRange(filteredByDate, 'sewer_and_water', startTimeRange1, endTimeRange1);
-  const filteredSewerAndWaterData2 = filterDataByCategoryAndTimeRange(filteredByDate, 'sewer_and_water', startTimeRange2, endTimeRange2);
+  const filteredSewerAndWaterData1 = filterDataByCategoryAndTimeRange(filteredByDate, selectedUtility, startTimeRange1, endTimeRange1);
+  const filteredSewerAndWaterData2 = filterDataByCategoryAndTimeRange(filteredByDate, selectedUtility, startTimeRange2, endTimeRange2);
   
   // Use filteredSewerAndWaterData for further processing/display
   // console.log(filteredSewerAndWaterData1);
@@ -789,8 +827,8 @@ function drawInnovative(reports_data)
   // const filteredSewerAndWaterData_1 = filterDataByCategory(filteredSewerAndWaterData1, 'sewer_and_water');
   // const filteredSewerAndWaterData_2 = filterDataByCategory(filteredSewerAndWaterData2, 'sewer_and_water');
   // // Aggregate data by value ranges for the 'sewer_and_water' category
-  const aggregatedData1 = aggregateDataByRanges(filteredSewerAndWaterData1, 'sewer_and_water');
-  const aggregatedData2 = aggregateDataByRanges(filteredSewerAndWaterData2, 'sewer_and_water');
+  const aggregatedData1 = aggregateDataByRanges(filteredSewerAndWaterData1, selectedUtility);
+  const aggregatedData2 = aggregateDataByRanges(filteredSewerAndWaterData2, selectedUtility);
   
   // Use aggregatedData for further processing/display
   console.log(aggregatedData1);

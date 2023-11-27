@@ -47,14 +47,7 @@
                         <label for="hourInput2">Hour 2:</label>
                         <input type="time" id="hourInput2" class="hourInput" step="3600" value="23:00"  required>
 
-                        Dropdown: <select id="myDropdown">
-                            <option value="">Select an option</option>
-                            <option value="buildings">Building</option>
-                            <option value="medical">Medical</option>
-                            <option value="power">Power</option>
-                            <option value="roads_and_bridges">Roads & Bridges</option>
-                            <option value="sewer_and_water">Sewer & Water</option>
-                        </select>
+                       
                     </div>
                 </div>
             </div>
@@ -63,6 +56,15 @@
                 <div class="card" id="choro_div">
                     <h2>Card 1</h2>
                     <svg id="my_dataviz" width="500" height="400"></svg>
+        
+                    <select id="myDropdown">
+                        <option value="SelectOption">Select Utility</option>
+                        <option value="buildings">Building</option>
+                        <option value="medical">Medical</option>
+                        <option value="power">Power</option>
+                        <option value="roads_and_bridges">Roads & Bridges</option>
+                        <option value="sewer_and_water">Sewer & Water</option>
+                    </select>
                     <div id="chorotooltip" class="tooltip">
                         <strong id="tooltip-title"></strong> <br>
                         <strong id="tooltip-x"></strong> <br>
@@ -120,6 +122,7 @@
                 </div>
                 <div class="card-innovative">
                     <h2>Card 6</h2>
+                    <p id = "InnovativeHeading" style="text-align: center; font-weight: bold;"></p>
                     <svg id="innovative"></svg>
                 </div>
             </div>
