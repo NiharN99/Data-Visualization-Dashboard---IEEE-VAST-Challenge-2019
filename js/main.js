@@ -156,7 +156,8 @@ document.addEventListener('DOMContentLoaded', function () {
 function update_charts(filtered_data){
   drawChoropleth(filtered_data,topo,'impact');
   var dropdown = document.getElementById('myDropdown');
-  dropdown.value = 'SelectOption';
+  dropdown.value = 'impact';
+  dropdown.text = 'Overall Impact';
   drawViolinChart(filtered_data);
 
 }
