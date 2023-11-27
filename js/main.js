@@ -756,7 +756,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
            // Assuming you have defined choroheight and chorowidth earlier
            let legend = chorosvg.append("g")
            .attr("class", "legend")
-           .attr("transform", "translate(300,400)"); // Adjust the position as needed
+           .attr("transform", "translate(325,400)"); // Adjust the position as needed
    
          
           function createLegend(colorScale) {
