@@ -215,7 +215,7 @@ function drawStreamgraph(reports_data, location) {
   clearInnovativeChart();
   StreamInstruct=document.getElementById("StreamInstruct");
   StreamInstruct.style.display="none";
-  
+
   InnovativeInstruct=document.getElementById("InnovativeInstruct");
   InnovativeInstruct.style.display="block";
 
@@ -827,6 +827,11 @@ function drawChoropleth (reports_data,topo,selectedValue){
       
           clearStreamGraph();
           clearInnovativeChart();
+          
+          StreamInstruct=document.getElementById("StreamInstruct");
+          StreamInstruct.style.display="block";
+          InnovativeInstruct=document.getElementById("InnovativeInstruct");
+          InnovativeInstruct.style.display="block";
       
           const myParagraph = document.getElementById('InnovativeHeading');
           myParagraph.innerHTML = '';
