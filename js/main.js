@@ -817,6 +817,28 @@ function drawChoropleth (reports_data,topo,selectedValue){
 
         createLegend(colorScale);
 
+        
+        
+        function resetChoropleth() {
+          d3.selectAll('.Country')
+            .transition()
+            .duration(200)
+            .style('opacity', 1);
+      
+          clearStreamGraph();
+          clearInnovativeChart();
+      
+          const myParagraph = document.getElementById('InnovativeHeading');
+          myParagraph.innerHTML = '';
+        }
+
+        document.body.addEventListener('click', function(event) {
+          if (!document.getElementById('my_dataviz').contains(event.target)) {
+            selectedStates = []; // Assuming selectedStates is a global variable storing selected states
+            resetChoropleth();
+          }});
+
+
  
 
 
