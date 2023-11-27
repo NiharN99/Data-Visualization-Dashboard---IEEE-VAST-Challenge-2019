@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
               filtered_data_violin=reports_data;
-            drawStreamgraphFinal(reports_data,location);
+            // drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
             drawBarChart(14);
@@ -188,7 +188,9 @@ function drawStreamgraphFinal (reports_data,location) {
   drawStreamgraph(reports_data,location);
 
 }
-
+function clearStreamGraph(){
+  d3.select("#streamgraph").selectAll("*").remove();
+}
 
 
 
@@ -310,9 +312,9 @@ const keys = Object.keys(arrayResult[0]).filter(key => key !== 'datetime' && key
     item.datetime = item.datetime.getTime();
   });
 
-  var margin = {top: 10, right: 200, bottom: 175, left: 200};
+  var margin = {top: 10, right: 200, bottom: 200, left: 200};
   width = 1200 - margin.left - margin.right,
-  height = 400 - margin.top - margin.bottom;
+  height = 450 - margin.top - margin.bottom;
 
   var svg = d3.select("#streamgraph");
   svg.selectAll("*").remove();
@@ -385,7 +387,7 @@ svg
       ]).tickFormat(d3.timeFormat("%b %d, %Y"));
 
   svg.append('g')
-    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-23) + ')')
+    .attr('transform', 'translate('+ 0 +',' + (height+margin.bottom-30) + ')')
     .call(xAxis);    
 
     svg.append("text")
@@ -695,6 +697,13 @@ function drawChoropleth (reports_data,topo){
               return selectedStates.includes(state.properties.Id) ? 1 : 0.2;
               }
             })
+            console.log(selectedStates);
+            if (selectedStates.length === 0) {
+              clearStreamGraph();
+            } else {
+              drawStreamgraphFinal(reports_data,selectedStates);
+            }
+          
 
       });
 }
