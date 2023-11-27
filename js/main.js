@@ -516,7 +516,7 @@ function hideTooltip() {
         .style("opacity", 0);
 }
 
-  function showchorotooltip (d, event,averagedImpact) {
+  function showchorotooltip (d, event,averagedAttribute) {
     var x_cood = event.pageX, y_cood = event.pageY;
     chorotooltip
         .style('top', y_cood + 'px')
@@ -525,7 +525,7 @@ function hideTooltip() {
         const name = d.srcElement.__data__.properties.Nbrhood;
         const id = d.srcElement.__data__.properties.Id;
         chorotooltip.select("#tooltip-title").text(name);
-        chorotooltip.select("#tooltip-x").text(`Average Impact - ${averagedImpact.get(id)}`);
+        chorotooltip.select("#tooltip-x").text(`Average Impact - ${averagedAttribute.get(id)}`);
         chorotooltip
         .transition()
         .duration(200)
@@ -559,14 +559,26 @@ function drawChoropleth (reports_data,topo){
       var groupedData = d3.group(filteredData, d => d.location);
       // console.log(groupedData);
 
-      var averagedImpact = new Map();
-      groupedData.forEach((value, key) => {
-        var totalImpact = value.reduce((acc, cur) => acc + parseFloat(cur.impact), 0);
-        var averageImpact = totalImpact / value.length;
-        averagedImpact.set(key, averageImpact);
-      });
+      var selectedValue = 'impact'
 
-      // console.log(averagedImpact);
+      // var averagedImpact = new Map();
+      // groupedData.forEach((value, key) => {
+      //   var totalImpact = value.reduce((acc, cur) => acc + parseFloat(cur.impact), 0);
+      //   var averageImpact = totalImpact / value.length;
+      //   averagedImpact.set(key, averageImpact);
+      // });
+
+
+      var averagedAttribute = new Map();
+      groupedData.forEach((value, key) => {
+        var filteredValues = value.filter(d => parseFloat(d[selectedValue]) !== -1);
+        // console.log(filteredValues);
+        var total = filteredValues.reduce((acc, cur) => acc + parseFloat(cur[selectedValue]), 0);
+        var average = total / filteredValues.length;
+        averagedAttribute.set(key, average);
+      });
+      // console.log("Hello");
+      // console.log(averagedAttribute);
 
 
       let projection = d3.geoMercator()
@@ -585,7 +597,7 @@ function drawChoropleth (reports_data,topo){
           .style("stroke", "black")
           .style("stroke-width","2px");
 
-        showchorotooltip(d,event,averagedImpact);
+        showchorotooltip(d,event,averagedAttribute);
       }
 
       let mouseLeave = function(d) {
@@ -610,7 +622,7 @@ function drawChoropleth (reports_data,topo){
       .attr("fill", function (d) {
         // console.log(d.properties.Id);
         var location = d.properties.Id; // Assuming 'Nbrhood' holds the location value
-        averageImpact = averagedImpact.get(location);
+        averageImpact = averagedAttribute.get(location);
         // console.log(averageImpact);
         return averageImpact ? colorScale(parseFloat(averageImpact)): '#ffffff';
 
