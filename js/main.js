@@ -27,50 +27,85 @@ document.addEventListener('DOMContentLoaded', function () {
       chorowidth = +chorosvg.attr("width"),
       choroheight = +chorosvg.attr("height");
 
-      var dateInput1 = document.querySelectorAll('#dateInput1');
-    var hourInput1 = document.querySelectorAll('#hourInput1');
+    // Date and hour Inputs
+    var dateInput1 = document.getElementById('dateInput1');
+    var hourInput1 = document.getElementById('hourInput1');
 
-    var dateInput2 = document.querySelectorAll('#dateInput2');
-    var hourInput2 = document.querySelectorAll('#hourInput2');
+    var dateInput2 = document.getElementById('dateInput2');
+    var hourInput2 = document.getElementById('hourInput2');
 
-    dateInput1.forEach(function (dateInput1) {
+    // Event listeners to track changes in the inputs
+  
       dateInput1.addEventListener('input', handleInputChangeFirstDate);
-    });
-
-    hourInput1.forEach(function (hourInput1) {
       hourInput1.addEventListener('input', handleInputChangeFirstHour);
-    });
-
-    dateInput2.forEach(function (dateInput2) {
       dateInput2.addEventListener('input', handleInputChangeSecondDate);
-    });
-
-    hourInput2.forEach(function (hourInput2) {
       hourInput2.addEventListener('input', handleInputChangeSecondHour);
-    });
 
+    // Functions to handle changes in inputs
     function handleInputChangeFirstDate(event) {
-      startDate = event.target.value;
-      console.log('first date' + ':', startDate);
-      filterData(reports_data,startDate,startHour,endDate,endHour);
+      let tStartDate = event.target.value;
+      if (validate_datetime(tStartDate, startHour, endDate, endHour)){
+        startDate = tStartDate;
+        filterData(reports_data,startDate,startHour,endDate,endHour);
+      }
+      else{
+        alert("Please choose a valid time range !");
+        dateInput1.value = startDate;
+        dateInput1.dispatchEvent(new Event('input'));
+      }
     }
 
     function handleInputChangeSecondDate(event) {
-      endDate = event.target.value;
-      console.log('end date' + ':', endDate);
-      filterData(reports_data,startDate,startHour,endDate,endHour);
+      let tEndDate = event.target.value;
+      if (validate_datetime(startDate, startHour, tEndDate, endHour)){
+        endDate = tEndDate;
+        filterData(reports_data,startDate,startHour,tEndDate,endHour);
+      }
+      else{
+        alert("Please choose a valid time range!");
+        dateInput2.value = endDate;
+        dateInput2.dispatchEvent(new Event('input'));
+      }
     }
 
     function handleInputChangeFirstHour(event) {
-      startHour = event.target.value;
-      console.log('first hour' + ':', startHour);
-      filterData(reports_data,startDate,startHour,endDate,endHour);
+      let tStartHour = event.target.value;
+      console.log(tStartHour);
+      if (validate_datetime(startDate, tStartHour, endDate, endHour)){
+        startHour= tStartHour;
+        filterData(reports_data,startDate,tStartHour,endDate,endHour);
+      }
+      else{
+        alert("Please choose a valid time range!");
+        hourInput1.value = startHour;
+        hourInput1.dispatchEvent(new Event('input'));
+      }
     }
 
     function handleInputChangeSecondHour(event) {
-      endHour = event.target.value;
-      console.log('end hour' + ':', endHour);
-      filterData(reports_data,startDate,startHour,endDate,endHour);
+      let tEndHour = event.target.value;
+      if (validate_datetime(startDate, startHour, endDate, tEndHour)){
+        endHour = tEndHour;
+        filterData(reports_data,startDate,startHour,endDate,tEndHour);
+      }
+      else{
+        alert("Please choose a valid time !");
+        hourInput2.value = endHour;
+        hourInput2.dispatchEvent(new Event('input'));
+      }
+    }
+
+    function validate_datetime(startDate, startHour, endDate, endHour){
+      let startTime = convertDate(startDate,startHour);
+      let endTime = convertDate(endDate,endHour);
+      console.log(startTime,endTime);
+      if (startTime >= endTime){
+        return false
+      }
+      else{
+        return true
+      }
+
     }
     console.log(startDate, startHour, endDate, endHour);
     
