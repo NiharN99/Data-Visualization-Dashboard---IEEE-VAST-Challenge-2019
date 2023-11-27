@@ -398,7 +398,7 @@ svg
     .enter().append('path')
     .attr("class", "path")
       .attr('d', area)
-      .attr('fill', (d, i) => d3.schemeCategory10[i])
+      .attr('fill', (d, i) => d3.schemeTableau10[i])
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
@@ -443,7 +443,7 @@ keys.forEach((key, i) => {
   .attr("y", 60)
     .attr("width", 18)
     .attr("height", 18)
-    .attr("fill", d3.schemeCategory10[i]);
+    .attr("fill", d3.schemeTableau10[i]);
 
   legendItem.append("text")
     .attr("x", 24)
