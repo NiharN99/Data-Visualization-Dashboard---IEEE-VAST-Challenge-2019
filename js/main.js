@@ -838,7 +838,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
         }
 
         document.body.addEventListener('click', function(event) {
-          if (!document.getElementById('my_dataviz').contains(event.target)) {
+          if (!document.getElementById('my_dataviz').contains(event.target) && document.getElementById('choro_div').contains(event.target)) {
             selectedStates = []; // Assuming selectedStates is a global variable storing selected states
             resetChoropleth();
           }});
