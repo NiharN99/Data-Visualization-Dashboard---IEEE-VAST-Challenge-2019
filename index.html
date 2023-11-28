@@ -29,28 +29,39 @@
 
     <section>
         <div class="container">
-            <div class="row">
-                <div class="card widget-height full-width">
-                    <h2>Widgets</h2>
+           
+                <!-- <div class="card position"> -->
                     <!-- Time slider and dropdown go here -->
-                    <div class="row">
-
-                        <label for="dateInput1">Date 1:</label>
-                        <input type="date" id="dateInput1" class="dateInput" min="2020-04-06" max="2020-04-11" value = "2020-04-06" required>
-                    
-                        <label for="hourInput1">Hour 1:</label>
-                        <input type="time" id="hourInput1" class="hourInput" step="3600" value="00:00"   required>
-                    
-                        <label for="dateInput2">Date 2:</label>
-                        <input type="date" id="dateInput2" class="dateInput" min="2020-04-06" max="2020-04-11"  value = "2020-04-11" required>
-                    
-                        <label for="hourInput2">Hour 2:</label>
-                        <input type="time" id="hourInput2" class="hourInput" step="3600" value="23:00"  required>
-
-                       
+                    <div class="row-dateTime-container">
+                        <div></div>
+                        <div></div>
+                        <div class="widget-container">
+                            <label for="dateInput1" class="widget-label-group">Start Date</label>
+                            <br>
+                            <input type="date" id="dateInput1" class="dateInput" min="2020-04-06" max="2020-04-11" value = "2020-04-06" required>  
+                        </div>
+                        <div class="widget-container">
+                            <label for="hourInput1"class="widget-label-group">Start Time</label>
+                            <br>
+                            <input type="time" id="hourInput1" class="hourInput" step="3600" value="00:00"   required>    
+                        </div>
+                        <div></div>
+                        <div></div>
+                        <div class="widget-container">
+                            <label for="dateInput2" class="widget-label-group">End Date</label>
+                            <br>
+                            <input type="date" id="dateInput2" class="dateInput" min="2020-04-06" max="2020-04-11"  value = "2020-04-11" required>    
+                        </div>
+                        <div class="widget-container">
+                            <label for="hourInput2" class="widget-label-group">End Time</label>
+                            <br>
+                            <input type="time" id="hourInput2" class="hourInput" step="3600" value="23:00"  required>
+                        </div>
+                        <div></div>
+                        <div></div>
                     </div>
-                </div>
-            </div>
+                <!-- </div> -->
+           
 
             <div class="row">
                 <div class="card" id="choro_div">

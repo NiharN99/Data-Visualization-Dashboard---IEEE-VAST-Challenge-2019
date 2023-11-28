@@ -51,14 +51,10 @@ section {
     box-sizing: border-box; /* Ensure padding is included in the width */
 }
 
-.full-width {
+.position{
     width: 100%;
+    height: 120px;
 }
-
-.widget-height{
-    height: 200px;
-}
-
 .tooltip {
     width: 200px;
     height: 50px;
@@ -187,3 +183,121 @@ footer {
 #myDropdown option {
     background-color: #f4f4f4;
 }
+
+/* Container for each input and label pair */
+.widget-label-group {
+    display: block; /* Ensures the label is on a new line */
+    margin-bottom: 0px; /* Spacing between the label and the input */
+    font-family: 'Arial', sans-serif; /* Change as per your preference */
+    font-size: 14px; /* Adjust the size as needed */
+    color: #333; /* Label text color */
+    font-weight: 600; /* Makes the label text slightly bolder */
+    text-transform: uppercase; /* Stylistic choice for uppercase labels */
+    letter-spacing: 1px; /* Spacing between characters */
+}
+
+/* Style for the container of each input and label group */
+.widget-container {
+    text-align: center; /* Center align the content */
+    margin-bottom: 10px; /* Add space between each input-label group */
+    margin-top: 10px;
+  }
+
+/* Date and Time Picker Container */
+.row-dateTime-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 100px;
+    margin-right: 100px;
+    margin-top: 2px;
+    margin-bottom: 10px;
+    background-color: #d0e5f2; /* Light grey background */
+    border-radius: 5px;
+    /* box-shadow: 0 2px 5px #4771a5; */
+     /* subtle shadow */
+     box-shadow: 0 2px 5px #3f54be
+;
+  }
+
+
+/* Style for the date and time inputs */
+.dateInput, .hourInput {
+    padding: 10px 12px;
+    border: 1px solid #ced4da; /* A neutral border color */
+    border-radius: 4px; /* Rounded corners for a modern look */
+    font-family: 'Arial', sans-serif;
+    font-size: 16px; /* Slightly larger font for readability */
+    width: 100%; /* Full width to match the label's width */
+    box-sizing: border-box; /* Include padding in the width */
+    background-color: #ffffff; /* White background */
+    color: #495057; /* Dark color for text for contrast */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft box shadow for depth */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; /* Smooth transition for focus and hover */
+  }
+  
+  /* Hover styles for date and time inputs */
+  .dateInput:hover, .hourInput:hover {
+    border-color: #adb5bd; /* Slightly darker border on hover */
+  }
+  
+  /* Focus styles to match the labels */
+  .dateInput:focus, .hourInput:focus {
+    border-color: #4A90E2; /* Blue border color to match the focus state of labels */
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25); /* Glowing effect to match */
+    outline: none; /* Removing default outline */
+  }
+  
+  /* Adjustments for calendar and clock icons inside the inputs */
+  .dateInput::-webkit-calendar-picker-indicator,
+  .hourInput::-webkit-calendar-picker-indicator {
+    color: rgba(0, 0, 0, 0); /* Hide the default icon */
+    background: url('../Data/icons/calendar.svg') no-repeat center center; /* Path to your custom icon */
+    background-size: contain; /* Ensure the icon size fits well */
+  }
+  
+  .hourInput::-webkit-calendar-picker-indicator {
+    background: url('../Data/icons/time.svg') no-repeat center center; /* Path to your custom icon */
+  }
+  
+  /* To ensure the above icon changes work for different browsers */
+  .dateInput[type="date"]::-ms-clear, .dateInput[type="date"]::-ms-reveal {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  
+  .dateInput[type="date"]::-ms-expand {
+    display: none;
+  }
+
+  /* Base styling for the dropdown */
+#myDropdown {
+    padding: 8px 16px; /* Adjust padding as needed */
+    border: 1px solid #ced4da; /* Neutral border color */
+    border-radius: 4px; /* Rounded corners for a modern look */
+    font-family: 'Arial', sans-serif; /* Consistent font family */
+    font-size: 16px; /* Slightly larger font for readability */
+    background-color: #ffffff; /* White background */
+    color: #495057; /* Text color for the dropdown */
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none; /* Remove default styling for WebKit browsers */
+    -moz-appearance: none; /* Remove default styling for Mozilla browsers */
+    background-image: url('../Data/icons/dropdown.svg'); /* Custom icon */
+    background-repeat: no-repeat; /* No repeat for background image */
+    background-position: right 8px center; /* Icon position inside the dropdown */
+    cursor: pointer; /* Change mouse pointer to indicate this is a dropdown */
+    width: 25%; /* Full width to fit the container */
+  }
+  
+  /* Focus styles to give feedback to users when they select the dropdown */
+  #myDropdown:focus {
+    border-color: #80bdff; /* Blue border to highlight focus */
+    outline: none; /* Removes the default focus outline */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Glow effect similar to inputs */
+  }
+  
+  /* To change the arrow icon, you must hide the default one and use a background image */
+  #myDropdown::-ms-expand {
+    display: none; /* For IE11 */
+  }
