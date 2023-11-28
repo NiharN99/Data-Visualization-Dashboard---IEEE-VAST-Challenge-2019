@@ -399,13 +399,14 @@ svg
         tooltip
             .style('top', (y_cood-100) + 'px')
             .style('left', x_cood + 'px');
-            var invertedX = new Date(xScale.invert(x_cood - padding));
-
+            
+            var invertedX = new Date(xScale.invert(x_cood - padding-20));
+            var dateOptions = { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+            var formattedDate = invertedX.toLocaleString('en-US', dateOptions);
         // console.log("Stream value:" ,new Date(invertedX));
-      
         // tooltip.select("#tooltip-title").text(`${invertedX}`)
         tooltip.select("#tooltip-title").text(`Time:`)
-    tooltip.select("#tooltip-x").text(`${invertedX}`)
+    tooltip.select("#tooltip-x").text(`${formattedDate}`)
       
         tooltip
             .transition()
@@ -832,7 +833,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
             choroButton.addEventListener('click', resetChoropleth);
       });
 
-      g.attr("transform", "translate(20, -65)");
+      g.attr("transform", "translate(60, -65)");
            // Assuming you have defined choroheight and chorowidth earlier
            let legend = chorosvg.append("g")
            .attr("class", "legend")
