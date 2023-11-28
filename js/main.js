@@ -1493,17 +1493,17 @@ function drawPieChart(targetLocation,filteredData) {
     const width = 55;
     const height = 80;
 
-    const totalWidth = categories.length * (width + 20) + 90;
+    const totalWidth = categories.length * (width + 100) + 90;
 
     svg.attr("width", totalWidth);
 
     const coordinates = [
-        { x: 90, y: 70 },
-        { x: 270, y: 70 },
-        { x: 450, y: 70 },
-        { x: 90, y: 240 },
-        { x: 270, y: 240 },
-        { x: 450, y: 240 },
+        { x: 200, y: 70 },
+        { x: 400, y: 70 },
+        { x: 600, y: 70 },
+        { x: 200, y: 240 },
+        { x: 400, y: 240 },
+        { x: 600, y: 240 },
     ];
 
     const colorScale = d3.scaleOrdinal()
@@ -1565,13 +1565,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,420)");
 
     legendGroup.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#ec4c4c");
 
     legendGroup.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
@@ -1582,13 +1582,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,390)");
 
     legendGroup2.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#24cca4");
 
     legendGroup2.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
