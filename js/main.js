@@ -1387,7 +1387,7 @@ function drawSecondaryViolinChart(data, targetLocation){
     };
 
      // set the dimensions and margins of the graph
-     var margin = {top: 10, right: 10, bottom: 30, left: 10},
+     var margin = {top: 10, right: 10, bottom: 50, left: 20},
      width = 760 - margin.left - margin.right,
      height = 490 - margin.top - margin.bottom;
 
@@ -1475,6 +1475,26 @@ function drawSecondaryViolinChart(data, targetLocation){
          .style('fill', '#8aafc9')
          .attr('d', area)
       ;
+
+      // Add a y-axis label
+svg_new.append("text")
+.attr("text-anchor", "middle")
+.attr("transform", "translate(" + (margin.left - 25) + "," + (height / 2) + ")rotate(-90)")
+.text("Shake Intensity")
+.style('font-weight', 'bold')
+.style('font-size', '12px') // Adjust the font size as needed
+.style('fill', '#333'); // Adjust the font color as needed
+ //return svg.node()
+
+ // Add an x-axis label
+svg_new.append("text")
+.attr("text-anchor", "middle")
+// Position the text in the middle of the axis
+.attr("transform", `translate(${(width - margin.right) / 2}, ${height - margin.bottom +35})`)
+.text("Utility")
+.style('font-weight', 'bold')
+.style('font-size', '12px') // Adjust the font size as needed
+.style('fill', '#333'); // Adjust the font color as needed
 
       return_button = document.getElementById("return_button");
       return_button.style.display='block';
