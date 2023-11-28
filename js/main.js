@@ -755,6 +755,9 @@ function drawChoropleth (reports_data,topo,selectedValue){
       }
 
       let g = chorosvg.append("g")
+      
+    var choroButton=document.getElementById("clearAll_button");
+      
 
 
 
@@ -779,6 +782,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
       .on("mouseleave", mouseLeave )
       .on("click", function(d) {
           // console.log(d);
+      
           const selected = d.srcElement.__data__.properties.Id;
           const name = d.srcElement.__data__.properties.Id;
           // console.log(selected)
@@ -824,8 +828,8 @@ function drawChoropleth (reports_data,topo,selectedValue){
               drawStreamgraphFinal(filteredData,selectedStates);
               drawBarChart(selectedStates);
             }
-          
-
+            choroButton.style.display='block';
+            choroButton.addEventListener('click', resetChoropleth);
       });
 
       g.attr("transform", "translate(20, -65)");
@@ -877,6 +881,8 @@ function drawChoropleth (reports_data,topo,selectedValue){
         
         
         function resetChoropleth() {
+          console.log("inside resetChoropleth");
+          selectedStates=[];
           d3.selectAll('.Country')
             .transition()
             .duration(200)
@@ -893,6 +899,8 @@ function drawChoropleth (reports_data,topo,selectedValue){
       
           const myParagraph = document.getElementById('InnovativeHeading');
           myParagraph.innerHTML = '';
+
+          choroButton.style.display='none';
         }
 
 
@@ -1240,7 +1248,7 @@ function drawViolinChart(data){
     //console.log(i++);
 
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 10, bottom: 30, left: 20},
+    var margin = {top: 10, right: 20, bottom: 45, left: 20},
     width = 760 - margin.left - margin.right,
     height = 490 - margin.top - margin.bottom;
 
@@ -1316,7 +1324,7 @@ function drawViolinChart(data){
      .append('path')
        .datum(d => d[1])
        .style('stroke', 'none')
-       .style('fill', '#0087bd')
+       .style('fill', '#8aafc9')
        .attr('d', area)
     ;
 
@@ -1333,8 +1341,25 @@ function drawViolinChart(data){
        });
     ;
    
+    // Add a y-axis label
+svg.append("text")
+  .attr("text-anchor", "middle")
+  .attr("transform", "translate(" + (margin.left - 25) + "," + (height / 2) + ")rotate(-90)")
+  .text("Shake Intensity")
+  .style('font-weight', 'bold')
+  .style('font-size', '12px') // Adjust the font size as needed
+  .style('fill', '#333'); // Adjust the font color as needed
    //return svg.node()
  
+   // Add an x-axis label
+svg.append("text")
+  .attr("text-anchor", "middle")
+  // Position the text in the middle of the axis
+  .attr("transform", `translate(${(width - margin.right) / 2}, ${height - margin.bottom +35})`)
+  .text("Location")
+  .style('font-weight', 'bold')
+  .style('font-size', '12px') // Adjust the font size as needed
+  .style('fill', '#333'); // Adjust the font color as needed
 }
 
 function drawSecondaryViolinChart(data, targetLocation){
@@ -1364,7 +1389,7 @@ function drawSecondaryViolinChart(data, targetLocation){
     };
 
      // set the dimensions and margins of the graph
-     var margin = {top: 10, right: 10, bottom: 30, left: 10},
+     var margin = {top: 10, right: 10, bottom: 50, left: 20},
      width = 760 - margin.left - margin.right,
      height = 490 - margin.top - margin.bottom;
 
@@ -1449,9 +1474,29 @@ function drawSecondaryViolinChart(data, targetLocation){
        .append('path')
          .datum(d => d[1])
          .style('stroke', 'none')
-         .style('fill', '#0087bd')
+         .style('fill', '#8aafc9')
          .attr('d', area)
       ;
+
+      // Add a y-axis label
+svg_new.append("text")
+.attr("text-anchor", "middle")
+.attr("transform", "translate(" + (margin.left - 25) + "," + (height / 2) + ")rotate(-90)")
+.text("Shake Intensity")
+.style('font-weight', 'bold')
+.style('font-size', '12px') // Adjust the font size as needed
+.style('fill', '#333'); // Adjust the font color as needed
+ //return svg.node()
+
+ // Add an x-axis label
+svg_new.append("text")
+.attr("text-anchor", "middle")
+// Position the text in the middle of the axis
+.attr("transform", `translate(${(width - margin.right) / 2}, ${height - margin.bottom +35})`)
+.text("Utility")
+.style('font-weight', 'bold')
+.style('font-size', '12px') // Adjust the font size as needed
+.style('fill', '#333'); // Adjust the font color as needed
 
       return_button = document.getElementById("return_button");
       return_button.style.display='block';
