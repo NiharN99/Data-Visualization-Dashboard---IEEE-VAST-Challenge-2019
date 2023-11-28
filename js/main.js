@@ -403,7 +403,9 @@ svg
 
         // console.log("Stream value:" ,new Date(invertedX));
       
-        tooltip.select("#tooltip-title").text(`${invertedX}`)
+        // tooltip.select("#tooltip-title").text(`${invertedX}`)
+        tooltip.select("#tooltip-title").text(`Time:`)
+    tooltip.select("#tooltip-x").text(`${invertedX}`)
       
         tooltip
             .transition()
