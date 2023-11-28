@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
             topo= values[0];
             reports_data = values[1];
             reports_data.forEach((item) => {
-            //    item.locationNum = parseInt(item.location.replace(/[^\d]/g, ''));
+                // item.locationNum = parseInt(item.location.replace(/[^\d]/g, ''));
                 for (let key in item) {
                   if (key !== 'time') {
                     item[key] = parseFloat(item[key]);
@@ -1478,7 +1478,7 @@ function drawPieChart(targetLocation,filteredData) {
 
     const colorScale = d3.scaleOrdinal()
         .domain(["-1.0", "Other"])
-        .range(["#24cca4", "#ec4c4c"]);
+        .range(["#ec4c4c", "#24cca4"]);
 
     categories.forEach((category, index) => {
         const pieData = getPercentageDataForCategory(category);
@@ -1523,7 +1523,7 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", 10)
-        .style("fill", "brown");
+        .style("fill", "#ec4c4c");
 
     legendGroup.append("text")
         .attr("x", 25)
@@ -1540,7 +1540,7 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("cx", 10)
         .attr("cy", 10)
         .attr("r", 10)
-        .style("fill", "gold");
+        .style("fill", "#24cca4");
 
     legendGroup2.append("text")
         .attr("x", 25)
