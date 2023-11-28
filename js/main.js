@@ -1,6 +1,7 @@
 
 let tooltip = null;
 var chorotooltip;
+var streamTooltip;
 let reports_data = null;
 var width;
 var chorosvg;
@@ -369,29 +370,64 @@ svg
     .y0(d => yScale(d[0]))
     .y1(d => yScale(d[1]));
 
-    var Tooltip = svg
-    .append("text")
-    .attr("x", 0)
-    .attr("y", 0)
-    .style("opacity", 0)
-    .style("font-size", 17)
+    // var Tooltip = svg
+    // .append("text")
+    // .attr("x", 0)
+    // .attr("y", 0)
+    // .style("opacity", 0)
+    // .style("font-size", 17)
 
     var mouseover = function(d) {
-        Tooltip.style("opacity", 1)
+        // Tooltip.style("opacity", 1)
         d3.selectAll(".path").style("opacity", .2)
         d3.select(this)
           .style("stroke", "black")
           .style("opacity", 1)
+     
+        const xval = d.pageX;
+        showTooltipStream(d,event,xval);
       }
 
+      function showTooltipStream(d, event,xval) {
+        
+      const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
+
+        var x_cood = event.pageX, y_cood = event.pageY;
+      
+        tooltip
+            .style('top', (y_cood-100) + 'px')
+            .style('left', x_cood + 'px');
+            var invertedX = new Date(xScale.invert(x_cood - padding));
+
+        // console.log("Stream value:" ,new Date(invertedX));
+      
+        tooltip.select("#tooltip-title").text(`${invertedX}`)
+      
+        tooltip
+            .transition()
+            .duration(200) 
+            .style("opacity", 0.9);
+      }
+
+      function hideTooltipStream() {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0);
+      }
+  
       var mousemove = function(d,i) {
-        grp = keys[i]
-        Tooltip.text(grp)
+        // grp = keys[i]
+        // Tooltip.text(grp)
+        // hideTooltipStream();
+        const xval = d.pageX;
+        showTooltipStream(d,event,xval);
       }
 
       var mouseleave = function(d) {
-        Tooltip.style("opacity", 0)
+        // Tooltip.style("opacity", 0)
         d3.selectAll(".path").style("opacity", 1).style("stroke", "none")
+        hideTooltipStream();
        }
 
        var mouseClick = function(d,i) {
@@ -602,6 +638,9 @@ function hideTooltip() {
         .duration(200)
         .style("opacity", 0);
 }
+
+
+
 
   function showchorotooltip (d, event,averagedAttribute) {
     var x_cood = event.pageX, y_cood = event.pageY;
