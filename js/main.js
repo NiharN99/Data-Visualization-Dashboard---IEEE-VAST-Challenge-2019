@@ -969,12 +969,13 @@ function drawInnovative(reports_data,selectedUtility)
   console.log("Innovative Merged Data for Plot", mergedObject);
 
   const width = 600;
-  const height = 450;
+  const height = 500;
   const marginTop = 40;
   const marginRight = 50;
   const marginBottom = 50;
   const marginLeft = 50;
   const padding = 3;
+  const svgWidth = width - marginRight - marginLeft;
   
   // Prepare the positional scales.
   const x = d3.scalePoint()
@@ -986,9 +987,11 @@ function drawInnovative(reports_data,selectedUtility)
     .domain(d3.extent(mergedObject.flatMap(d => [d["startData"], d["endData"]])))
     .range([height - marginBottom, marginTop]);
 
+var colors = ["green", "blue", "orange", "red"]
+
 const colorScale = d3.scaleOrdinal()
     .domain(keys)
-    .range(["green", "blue", "orange", "red"]);
+    .range(colors);
 
   const line = d3.line()
     .x((d, i) => x(i))
@@ -1007,7 +1010,7 @@ const colorScale = d3.scaleOrdinal()
 
   // Create the SVG container.
   const svg = d3.select("#innovative")
-      .attr("viewBox", [0, 0, width, height])
+      .attr("viewBox", [0, 0, width, height+150])
       .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
 
   // Append the x axis.
@@ -1108,6 +1111,29 @@ const colorScale = d3.scaleOrdinal()
             .attr("y2", d => d.y2)
             .attr("stroke", "black")
             .attr("stroke-width",1);
+
+    var circleRadius = 12
+
+    const circles = svg.selectAll(".legend-circle")
+        .data(colors)
+        .enter()
+        .append("circle")
+        .attr("class", "legend-circle")
+        .attr("cx", (d, i) => (i + 1.5) * (svgWidth / (colors.length + 1)))
+        .attr("cy", 510)
+        .attr("r", circleRadius)
+        .attr("fill", d => d)
+        .attr("opacity", 0.4);
+
+    const labelsGroup = svg.selectAll(".text-legend")
+        .data(keys)
+        .enter()
+        .append("text")
+        .attr("class", "text-legend")
+        .attr("x", (d, i) => (i + 1.5) * (svgWidth / (keys.length + 1)))
+        .attr("y", 535)
+        .attr("text-anchor", "middle")
+        .text(d => d);
 }
 
 function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
