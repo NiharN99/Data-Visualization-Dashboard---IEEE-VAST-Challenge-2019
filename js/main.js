@@ -1251,7 +1251,7 @@ function drawViolinChart(data){
      .append('path')
        .datum(d => d[1])
        .style('stroke', 'none')
-       .style('fill', '#69b3a2')
+       .style('fill', '#0087bd')
        .attr('d', area)
     ;
 
@@ -1384,7 +1384,7 @@ function drawSecondaryViolinChart(data, targetLocation){
        .append('path')
          .datum(d => d[1])
          .style('stroke', 'none')
-         .style('fill', '#69b3a2')
+         .style('fill', '#0087bd')
          .attr('d', area)
       ;
 
