@@ -66,6 +66,17 @@ section {
     opacity: 0;
 }
 
+.tooltip-pie {
+    width: 200px;
+    height: 50px;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 3px;
+    font-size: 10px;
+    opacity: 0;
+}
+
 .bar-icon{
     height: 70px;
     width: 120px;

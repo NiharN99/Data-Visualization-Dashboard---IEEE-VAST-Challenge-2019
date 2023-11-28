@@ -1,6 +1,8 @@
 
 let tooltip = null;
+let tooltipPie = null;
 var chorotooltip;
+var streamTooltip;
 let reports_data = null;
 var width;
 var chorosvg;
@@ -145,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
+            tooltipPie = d3.select("#tooltip-pie");
             //drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo,'impact');
@@ -369,29 +372,64 @@ svg
     .y0(d => yScale(d[0]))
     .y1(d => yScale(d[1]));
 
-    var Tooltip = svg
-    .append("text")
-    .attr("x", 0)
-    .attr("y", 0)
-    .style("opacity", 0)
-    .style("font-size", 17)
+    // var Tooltip = svg
+    // .append("text")
+    // .attr("x", 0)
+    // .attr("y", 0)
+    // .style("opacity", 0)
+    // .style("font-size", 17)
 
     var mouseover = function(d) {
-        Tooltip.style("opacity", 1)
+        // Tooltip.style("opacity", 1)
         d3.selectAll(".path").style("opacity", .2)
         d3.select(this)
           .style("stroke", "black")
           .style("opacity", 1)
+     
+        const xval = d.pageX;
+        showTooltipStream(d,event,xval);
       }
 
+      function showTooltipStream(d, event,xval) {
+        
+      const xScale = d3.scaleLinear().domain([d3.min(arrayResult, d => d.datetime), d3.max(arrayResult, d => d.datetime)]).range([padding, width + padding]);
+
+        var x_cood = event.pageX, y_cood = event.pageY;
+      
+        tooltip
+            .style('top', (y_cood-100) + 'px')
+            .style('left', x_cood + 'px');
+            var invertedX = new Date(xScale.invert(x_cood - padding));
+
+        // console.log("Stream value:" ,new Date(invertedX));
+      
+        tooltip.select("#tooltip-title").text(`${invertedX}`)
+      
+        tooltip
+            .transition()
+            .duration(200) 
+            .style("opacity", 0.9);
+      }
+
+      function hideTooltipStream() {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0);
+      }
+  
       var mousemove = function(d,i) {
-        grp = keys[i]
-        Tooltip.text(grp)
+        // grp = keys[i]
+        // Tooltip.text(grp)
+        // hideTooltipStream();
+        const xval = d.pageX;
+        showTooltipStream(d,event,xval);
       }
 
       var mouseleave = function(d) {
-        Tooltip.style("opacity", 0)
+        // Tooltip.style("opacity", 0)
         d3.selectAll(".path").style("opacity", 1).style("stroke", "none")
+        hideTooltipStream();
        }
 
        var mouseClick = function(d,i) {
@@ -602,6 +640,9 @@ function hideTooltip() {
         .duration(200)
         .style("opacity", 0);
 }
+
+
+
 
   function showchorotooltip (d, event,averagedAttribute) {
     var x_cood = event.pageX, y_cood = event.pageY;
@@ -1294,7 +1335,7 @@ function drawViolinChart(data){
            filteredDataViolin = data.filter(l => l.location===selectedLocation);
             console.log("filtered data : ", filteredDataViolin);
            drawSecondaryViolinChart(filteredDataViolin, selectedLocation);
-           drawPieChart(selectedLocation,data);
+           drawPieChart(selectedLocation,filteredDataViolin);
        });
     ;
    
@@ -1471,6 +1512,9 @@ function drawPieChart(targetLocation,filteredData) {
     // Group the filtered data by location and calculate the average impact
     var groupedData = d3.group(filteredData, d => d.location);
 
+    console.log("FIltered", filteredData)
+    console.log("Grouped", groupedData)
+
     // Log the grouped data
     //console.log("Grouped Data:", groupedData);
 
@@ -1497,8 +1541,8 @@ function drawPieChart(targetLocation,filteredData) {
          //console.log("Percentage of Other:", percentageOther);
 
          return [
-            { label: "-1.0", value: percentageMinusOne },
-            { label: "Other", value: percentageOther },
+            { label: "-1.0", value: percentageMinusOne, absValue: countMinusOne },
+            { label: "Other", value: percentageOther, absValue: countOther },
         ];
     }
 
@@ -1513,17 +1557,17 @@ function drawPieChart(targetLocation,filteredData) {
     const width = 55;
     const height = 80;
 
-    const totalWidth = categories.length * (width + 20) + 90;
+    const totalWidth = categories.length * (width + 100) + 90;
 
     svg.attr("width", totalWidth);
 
     const coordinates = [
-        { x: 90, y: 70 },
-        { x: 270, y: 70 },
-        { x: 450, y: 70 },
-        { x: 90, y: 240 },
-        { x: 270, y: 240 },
-        { x: 450, y: 240 },
+        { x: 200, y: 70 },
+        { x: 400, y: 70 },
+        { x: 600, y: 70 },
+        { x: 200, y: 240 },
+        { x: 400, y: 240 },
+        { x: 600, y: 240 },
     ];
 
     const colorScale = d3.scaleOrdinal()
@@ -1540,6 +1584,9 @@ function drawPieChart(targetLocation,filteredData) {
         const pie = d3.pie().value(function (d) { return d.value; });
         const data_ready = pie(pieData);
 
+        console.log("Pie data - ", pieData)
+        console.log("Ready Data - ", data_ready)
+
         const arc = d3.arc()
             .innerRadius(0)
             .outerRadius(Math.min(width, height) / 2 + 30); // Set the outer radius relative to the SVG size
@@ -1552,7 +1599,19 @@ function drawPieChart(targetLocation,filteredData) {
 
         arcs.append("path")
             .attr("d", arc)
-            .attr("fill", (d, i) => colorScale(d.data.label));
+            .attr("fill", (d, i) => colorScale(d.data.label))
+            .on('mouseover', function (event, d) {
+                console.log("hovered on", d);
+    
+                d3.select(this).attr("stroke", "black").attr("stroke-width", 2);
+                showTooltipPie(d, event);
+            
+            })
+            .on('mouseout', function (event, d) {
+                // Change the fill back to steelblue on hover out
+                d3.select(this).attr("stroke", "black").attr("stroke-width", 0);
+                hideTooltipPie(d, event);
+            });;
 
         // Display category name below each pie
         chartGroup.append("text")
@@ -1570,13 +1629,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,420)");
 
     legendGroup.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#ec4c4c");
 
     legendGroup.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
@@ -1587,13 +1646,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,390)");
 
     legendGroup2.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#24cca4");
 
     legendGroup2.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
@@ -1607,4 +1666,43 @@ function drawPieChart(targetLocation,filteredData) {
     pieChartInstruct=document.getElementById("pieChartInstruct");
     pieChartInstruct.style.display="none";
     d3.select(".pie-chart").style("display", "block");
+}
+
+function showTooltipPie(d, event) {
+
+    var x_cood = event.pageX, y_cood = event.pageY;
+  
+    tooltipPie
+        .style('top', y_cood + 'px')
+        .style('left', x_cood + 'px');
+    
+
+    console.log("Pie Tooltip in action", d)
+
+    var abs = d["data"]["absValue"]
+    console.log("Abs", d["data"]["label"]);
+
+    var tpTitle = "";
+
+    if(d["data"]["label"]==="-1.0"){
+        tpTitle = "Missing Data"
+    }
+    else{
+        tpTitle = "Valid Data"
+    }
+
+    tooltipPie.select("#tooltip-title-pie").text(`${tpTitle}`)
+    tooltipPie.select("#tooltip-x-pie").text(`Number of records - ${abs}`)
+
+    tooltipPie
+        .transition()
+        .duration(200) 
+        .style("opacity", 0.9);
+}
+
+function hideTooltipPie() {
+    tooltipPie
+        .transition()
+        .duration(200)
+        .style("opacity", 0);
 }

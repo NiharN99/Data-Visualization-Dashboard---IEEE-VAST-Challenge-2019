@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/main.js"></script>
-    <title>Dashboard</title>
+    <title>Disaster at St. Himark!</title>
 
     <!-- Bootstrap CSS -->
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
@@ -122,6 +122,10 @@
                     <p style="text-align: center; font-weight: bold;">Percentage Missing Data across utilities For Location <span id="pieLocation">  </span></p>
                     <span id="pieChartInstruct" style="text-align: center; font-style: italic;">(Select a location on Violin Chart to display missing data)</span>
                     <svg id="pieChart" width="500" height="500"></svg>
+                    <div id="tooltip-pie" class="tooltip-pie">
+                        <strong id="tooltip-title-pie"></strong> <br>
+                        <strong id="tooltip-x-pie"></strong> <br>
+                    </div>
                 </div>
             </div>
 
@@ -130,6 +134,10 @@
                     <h2>Streamgraph</h2>
                     <span id="StreamInstruct" style="text-align: center; font-style: italic; display:block">(Select a Location on Choropleth map to display this chart)</span>
                     <svg id = "streamgraph"></svg>
+                    <div id="streamTooltip" class="tooltip">
+                        <strong id="tooltip-title"></strong> <br>
+                        <strong id="tooltip-x"></strong> <br>
+                    </div>
                 </div>
                 <div class="card-innovative">
                     <h2>Bubble-o-Slopegraph</h2>
