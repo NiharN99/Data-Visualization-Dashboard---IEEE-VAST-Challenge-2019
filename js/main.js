@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dropdown.addEventListener('change', function() {
           var selectedValue = dropdown.value;
           console.log('Selected value: ' + selectedValue);
+          clearBarGraph();
           drawChoropleth(reports_data,topo,selectedValue);
         });
 
@@ -550,6 +551,8 @@ function drawBarChart(location) {
 }
 
 function clearBarGraph(){
+    barInstruct=document.getElementById("BarInstruct");
+    barInstruct.style.display="block";
     d3.select("#chart-bar").select("g").remove();
 }
 
@@ -850,7 +853,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
         }
 
         document.body.addEventListener('click', function(event) {
-          if (!document.getElementById('my_dataviz').contains(event.target) && document.getElementById('choro_div').contains(event.target)) {
+          if (!document.getElementById('my_dataviz').contains(event.target) && document.getElementById('choro_div').contains(event.target) && !document.getElementById("myDropdown").contains(event.target)) {
             selectedStates = []; // Assuming selectedStates is a global variable storing selected states
             resetChoropleth();
           }});
