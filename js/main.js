@@ -1,5 +1,6 @@
 
 let tooltip = null;
+let tooltipPie = null;
 var chorotooltip;
 var streamTooltip;
 let reports_data = null;
@@ -146,6 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // drawStreamgraphFinal(reports_data,location);
             drawLineChart(reports_data);
             tooltip =  d3.select('#tooltip');
+            tooltipPie = d3.select("#tooltip-pie");
             //drawBarChart(14);
             console.log(reports_data);
             drawChoropleth(reports_data,topo,'impact');
@@ -891,11 +893,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
           myParagraph.innerHTML = '';
         }
 
-        document.body.addEventListener('click', function(event) {
-          if (!document.getElementById('my_dataviz').contains(event.target) && document.getElementById('choro_div').contains(event.target) && !document.getElementById("myDropdown").contains(event.target)) {
-            selectedStates = []; // Assuming selectedStates is a global variable storing selected states
-            resetChoropleth();
-          }});
+
 
 
  
@@ -1012,12 +1010,13 @@ function drawInnovative(reports_data,selectedUtility)
   console.log("Innovative Merged Data for Plot", mergedObject);
 
   const width = 600;
-  const height = 450;
+  const height = 500;
   const marginTop = 40;
   const marginRight = 50;
   const marginBottom = 50;
   const marginLeft = 50;
   const padding = 3;
+  const svgWidth = width - marginRight - marginLeft;
   
   // Prepare the positional scales.
   const x = d3.scalePoint()
@@ -1029,9 +1028,11 @@ function drawInnovative(reports_data,selectedUtility)
     .domain(d3.extent(mergedObject.flatMap(d => [d["startData"], d["endData"]])))
     .range([height - marginBottom, marginTop]);
 
+var colors = ["green", "blue", "orange", "red"]
+
 const colorScale = d3.scaleOrdinal()
     .domain(keys)
-    .range(["green", "blue", "orange", "red"]);
+    .range(colors);
 
   const line = d3.line()
     .x((d, i) => x(i))
@@ -1050,7 +1051,7 @@ const colorScale = d3.scaleOrdinal()
 
   // Create the SVG container.
   const svg = d3.select("#innovative")
-      .attr("viewBox", [0, 0, width, height])
+      .attr("viewBox", [0, 0, width, height+150])
       .attr("style", "max-width: 100%; height: auto; font: 10px sans-serif;");
 
   // Append the x axis.
@@ -1151,6 +1152,29 @@ const colorScale = d3.scaleOrdinal()
             .attr("y2", d => d.y2)
             .attr("stroke", "black")
             .attr("stroke-width",1);
+
+    var circleRadius = 12
+
+    const circles = svg.selectAll(".legend-circle")
+        .data(colors)
+        .enter()
+        .append("circle")
+        .attr("class", "legend-circle")
+        .attr("cx", (d, i) => (i + 1.5) * (svgWidth / (colors.length + 1)))
+        .attr("cy", 510)
+        .attr("r", circleRadius)
+        .attr("fill", d => d)
+        .attr("opacity", 0.4);
+
+    const labelsGroup = svg.selectAll(".text-legend")
+        .data(keys)
+        .enter()
+        .append("text")
+        .attr("class", "text-legend")
+        .attr("x", (d, i) => (i + 1.5) * (svgWidth / (keys.length + 1)))
+        .attr("y", 535)
+        .attr("text-anchor", "middle")
+        .text(d => d);
 }
 
 function dodge(positions, separation = 10, maxiter = 10, maxerror = 1e-1) {
@@ -1290,7 +1314,7 @@ function drawViolinChart(data){
      .append('path')
        .datum(d => d[1])
        .style('stroke', 'none')
-       .style('fill', '#69b3a2')
+       .style('fill', '#0087bd')
        .attr('d', area)
     ;
 
@@ -1303,7 +1327,7 @@ function drawViolinChart(data){
            filteredDataViolin = data.filter(l => l.location===selectedLocation);
             console.log("filtered data : ", filteredDataViolin);
            drawSecondaryViolinChart(filteredDataViolin, selectedLocation);
-           drawPieChart(selectedLocation,data);
+           drawPieChart(selectedLocation,filteredDataViolin);
        });
     ;
    
@@ -1423,7 +1447,7 @@ function drawSecondaryViolinChart(data, targetLocation){
        .append('path')
          .datum(d => d[1])
          .style('stroke', 'none')
-         .style('fill', '#69b3a2')
+         .style('fill', '#0087bd')
          .attr('d', area)
       ;
 
@@ -1463,6 +1487,9 @@ function drawPieChart(targetLocation,filteredData) {
     // Group the filtered data by location and calculate the average impact
     var groupedData = d3.group(filteredData, d => d.location);
 
+    console.log("FIltered", filteredData)
+    console.log("Grouped", groupedData)
+
     // Log the grouped data
     //console.log("Grouped Data:", groupedData);
 
@@ -1489,8 +1516,8 @@ function drawPieChart(targetLocation,filteredData) {
          //console.log("Percentage of Other:", percentageOther);
 
          return [
-            { label: "-1.0", value: percentageMinusOne },
-            { label: "Other", value: percentageOther },
+            { label: "-1.0", value: percentageMinusOne, absValue: countMinusOne },
+            { label: "Other", value: percentageOther, absValue: countOther },
         ];
     }
 
@@ -1505,17 +1532,17 @@ function drawPieChart(targetLocation,filteredData) {
     const width = 55;
     const height = 80;
 
-    const totalWidth = categories.length * (width + 20) + 90;
+    const totalWidth = categories.length * (width + 100) + 90;
 
     svg.attr("width", totalWidth);
 
     const coordinates = [
-        { x: 90, y: 70 },
-        { x: 270, y: 70 },
-        { x: 450, y: 70 },
-        { x: 90, y: 240 },
-        { x: 270, y: 240 },
-        { x: 450, y: 240 },
+        { x: 200, y: 70 },
+        { x: 400, y: 70 },
+        { x: 600, y: 70 },
+        { x: 200, y: 240 },
+        { x: 400, y: 240 },
+        { x: 600, y: 240 },
     ];
 
     const colorScale = d3.scaleOrdinal()
@@ -1532,6 +1559,9 @@ function drawPieChart(targetLocation,filteredData) {
         const pie = d3.pie().value(function (d) { return d.value; });
         const data_ready = pie(pieData);
 
+        console.log("Pie data - ", pieData)
+        console.log("Ready Data - ", data_ready)
+
         const arc = d3.arc()
             .innerRadius(0)
             .outerRadius(Math.min(width, height) / 2 + 30); // Set the outer radius relative to the SVG size
@@ -1544,7 +1574,19 @@ function drawPieChart(targetLocation,filteredData) {
 
         arcs.append("path")
             .attr("d", arc)
-            .attr("fill", (d, i) => colorScale(d.data.label));
+            .attr("fill", (d, i) => colorScale(d.data.label))
+            .on('mouseover', function (event, d) {
+                console.log("hovered on", d);
+    
+                d3.select(this).attr("stroke", "black").attr("stroke-width", 2);
+                showTooltipPie(d, event);
+            
+            })
+            .on('mouseout', function (event, d) {
+                // Change the fill back to steelblue on hover out
+                d3.select(this).attr("stroke", "black").attr("stroke-width", 0);
+                hideTooltipPie(d, event);
+            });;
 
         // Display category name below each pie
         chartGroup.append("text")
@@ -1562,13 +1604,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,420)");
 
     legendGroup.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#ec4c4c");
 
     legendGroup.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
@@ -1579,13 +1621,13 @@ function drawPieChart(targetLocation,filteredData) {
         .attr("transform", "translate(200,390)");
 
     legendGroup2.append("circle")
-        .attr("cx", 10)
+        .attr("cx", 100)
         .attr("cy", 10)
         .attr("r", 10)
         .style("fill", "#24cca4");
 
     legendGroup2.append("text")
-        .attr("x", 25)
+        .attr("x", 120)
         .attr("y", 13)
         .style("font-size", "15px")
         .style("font-weight", "bold")
@@ -1599,4 +1641,43 @@ function drawPieChart(targetLocation,filteredData) {
     pieChartInstruct=document.getElementById("pieChartInstruct");
     pieChartInstruct.style.display="none";
     d3.select(".pie-chart").style("display", "block");
+}
+
+function showTooltipPie(d, event) {
+
+    var x_cood = event.pageX, y_cood = event.pageY;
+  
+    tooltipPie
+        .style('top', y_cood + 'px')
+        .style('left', x_cood + 'px');
+    
+
+    console.log("Pie Tooltip in action", d)
+
+    var abs = d["data"]["absValue"]
+    console.log("Abs", d["data"]["label"]);
+
+    var tpTitle = "";
+
+    if(d["data"]["label"]==="-1.0"){
+        tpTitle = "Missing Data"
+    }
+    else{
+        tpTitle = "Valid Data"
+    }
+
+    tooltipPie.select("#tooltip-title-pie").text(`${tpTitle}`)
+    tooltipPie.select("#tooltip-x-pie").text(`Number of records - ${abs}`)
+
+    tooltipPie
+        .transition()
+        .duration(200) 
+        .style("opacity", 0.9);
+}
+
+function hideTooltipPie() {
+    tooltipPie
+        .transition()
+        .duration(200)
+        .style("opacity", 0);
 }
