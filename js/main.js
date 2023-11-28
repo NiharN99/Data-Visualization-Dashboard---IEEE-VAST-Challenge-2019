@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dropdown.addEventListener('change', function() {
           var selectedValue = dropdown.value;
           console.log('Selected value: ' + selectedValue);
+          selectedStates=[]
           clearBarGraph();
           drawChoropleth(reports_data,topo,selectedValue);
         });
