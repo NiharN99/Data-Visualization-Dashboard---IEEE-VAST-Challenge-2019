@@ -19,6 +19,7 @@ var startDate, startHour, endDate, endHour;
 var filtered_data_violin;
 var InnovativeInstruct;
 var StreamInstruct, barInstruct;
+var filteredData_orig_violin;
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -812,6 +813,7 @@ function drawChoropleth (reports_data,topo,selectedValue){
                 return selectedStates.includes(state.properties.Id) ? 1 : 0.2;
               }
             })
+            console.log("selectedStates");
             console.log(selectedStates);
             if (selectedStates.length === 0) {
               clearStreamGraph();
@@ -828,6 +830,14 @@ function drawChoropleth (reports_data,topo,selectedValue){
             } else {
               drawStreamgraphFinal(filteredData,selectedStates);
               drawBarChart(selectedStates);
+              filteredData_orig_violin=filteredData;
+              var  filteredDataViolin_states;
+              filteredDataViolin_states = filteredData.filter(l => selectedStates.includes(l.location));
+
+            console.log("filteredDataViolin_states");
+            console.log(filteredDataViolin_states);
+            filtered_data_violin=filteredDataViolin_states;
+              drawViolinChart(filteredDataViolin_states);
             }
             choroButton.style.display='block';
             choroButton.addEventListener('click', resetChoropleth);
@@ -901,6 +911,8 @@ function drawChoropleth (reports_data,topo,selectedValue){
           const myParagraph = document.getElementById('InnovativeHeading');
           myParagraph.innerHTML = '';
 
+          filtered_data_violin=filteredData_orig_violin;
+          drawViolinChart(filteredData_orig_violin);
           choroButton.style.display='none';
         }
 
@@ -1249,7 +1261,7 @@ function drawViolinChart(data){
     //console.log(i++);
 
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 20, bottom: 45, left: 20},
+    var margin = {top: 10, right: 50, bottom: 45, left: 20},
     width = 760 - margin.left - margin.right,
     height = 490 - margin.top - margin.bottom;
 
@@ -1272,8 +1284,11 @@ function drawViolinChart(data){
      .range([margin.left, width - margin.right])
      .padding(0.05);
    
+     // Determine the global maximum shake_intensity across all data, not just the filtered subset
+const globalMaxShakeIntensity = d3.max(reports_data, d => +d.shake_intensity);
+
    const y = d3.scaleLinear()
-     .domain([0, d3.max(data, d => +d.shake_intensity)]).nice()
+     .domain([0, globalMaxShakeIntensity]).nice()
      .range([height - margin.bottom, margin.top]);
    
    const xAxis = g => g
@@ -1286,14 +1301,29 @@ function drawViolinChart(data){
      .call(g => g.select('.domain').remove());
    
    function kde(kernel, thds) {
-     return V => thds.map(t => [t, d3.mean(V, d => kernel(t - d))])
+     return V => {
+      const densities = thds.map(t => [t, d3.mean(V, d => kernel(t - d))])
+    //  console.log("Calculated densities:", densities);
+    return densities;
+   }
    }
    
+   console.log("data.length", data.length);
    function epanechnikov(bandwidth) {
      return x => Math.abs(x /= bandwidth) <= 1 ? 0.75 * (1 - x * x) / bandwidth : 0;
    }
-   
-   const bandwidth = 0.3;
+   function calculateBandwidth(data) {
+    // Use Silverman's rule of thumb or another method to calculate bandwidth
+    const n = data.length;
+    const iqr = d3.quantile(data.map(d => +d.shake_intensity).sort(d3.ascending), 0.75) -
+                d3.quantile(data.map(d => +d.shake_intensity).sort(d3.ascending), 0.25);
+    const stdDev = d3.deviation(data.map(d => +d.shake_intensity));
+    const bandwidth = 0.9 * Math.min(stdDev, iqr / 1.34) * Math.pow(n, -1/5);
+    return bandwidth;
+  }
+
+   const bandwidth = 0.7;
+  // const bandwidth=calculateBandwidth(data);
    const thds = y.ticks(40);
    const density = kde(epanechnikov(bandwidth), thds);
    
@@ -1390,7 +1420,7 @@ function drawSecondaryViolinChart(data, targetLocation){
     };
 
      // set the dimensions and margins of the graph
-     var margin = {top: 10, right: 10, bottom: 50, left: 20},
+     var margin = {top: 10, right: 50, bottom: 50, left: 20},
      width = 760 - margin.left - margin.right,
      height = 490 - margin.top - margin.bottom;
 
@@ -1450,7 +1480,7 @@ function drawSecondaryViolinChart(data, targetLocation){
     );
      
      var allNum = [];
-     [...violins.values()].forEach((d,i) => allNum = allNum.concat([...violins.values()][i].map(d => d[1])))
+     [...violins.values()].forEach(density => allNum = allNum.concat(density.map(d => d[1])));
      const xNum  = d3.scaleLinear()
        .domain([-d3.max(allNum), d3.max(allNum)])
        .range([0, x.bandwidth()]);
